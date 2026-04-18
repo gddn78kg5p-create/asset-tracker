@@ -3,127 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#1a1a2e">
+    <meta name="theme-color" content="#0f0f23">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <title>资产追踪 Pro</title>
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); color: #fff; min-height: 100vh; font-size: 16px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #0f0f23; color: #fff; min-height: 100vh; position: relative; overflow-x: hidden; }
+        body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(ellipse at top left, rgba(120, 119, 198, 0.15), transparent 50%), radial-gradient(ellipse at bottom right, rgba(255, 119, 198, 0.1), transparent 50%), radial-gradient(ellipse at center, rgba(78, 205, 196, 0.08), transparent 70%); pointer-events: none; z-index: 0; }
+        
+        .container { position: relative; z-index: 1; }
         
         /* 顶部 */
-        .header { padding: 16px 12px 12px; background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); }
-        .header h1 { font-size: 24px; font-weight: 700; margin-bottom: 12px; background: linear-gradient(90deg, #667eea, #764ba2, #f093fb); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-        .stat-card { background: rgba(255,255,255,0.08); border-radius: 12px; padding: 14px 8px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
-        .stat-card .label { font-size: 11px; color: rgba(255,255,255,0.6); }
-        .stat-card .value { font-size: 22px; font-weight: 700; margin-top: 4px; color: #667eea; }
-        .stat-card.profit .value { color: #4ade80; }
-        .stat-card.loss .value { color: #f87171; }
+        .header { padding: 18px 14px 14px; background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%); }
+        .header h1 { font-size: 26px; font-weight: 800; margin-bottom: 14px; background: linear-gradient(135deg, #fff 0%, #a78bfa 50%, #f472b6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.5px; }
+        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .stat-card { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 16px 10px; text-align: center; border: 1px solid rgba(255,255,255,0.06); backdrop-filter: blur(10px); }
+        .stat-card .label { font-size: 12px; color: rgba(255,255,255,0.5); font-weight: 500; }
+        .stat-card .value { font-size: 24px; font-weight: 800; margin-top: 6px; background: linear-gradient(135deg, #a78bfa, #f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .stat-card.profit .value { background: linear-gradient(135deg, #4ade80, #22d3ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .stat-card.loss .value { background: linear-gradient(135deg, #f87171, #fb923c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        .content { padding: 10px 8px; }
+        .content { padding: 12px 10px; }
         
         /* 板块 */
-        .section { background: rgba(255,255,255,0.06); border-radius: 14px; padding: 12px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.08); }
-        .section h3 { font-size: 15px; color: rgba(255,255,255,0.7); margin-bottom: 10px; font-weight: 600; }
-        
-        /* 概览网格 */
-        .grid-6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
-        .grid-item { text-align: center; padding: 10px 4px; background: rgba(255,255,255,0.05); border-radius: 10px; }
-        .grid-item .val { font-size: 20px; font-weight: 700; color: #667eea; }
-        .grid-item .lbl { font-size: 10px; color: rgba(255,255,255,0.5); margin-top: 2px; }
-        .grid-item.profit .val { color: #4ade80; }
-        .grid-item.loss .val { color: #f87171; }
+        .section { background: rgba(255,255,255,0.03); border-radius: 18px; padding: 14px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px); }
+        .section h3 { font-size: 14px; color: rgba(255,255,255,0.4); margin-bottom: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
         
         /* 折旧 */
-        .dep-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .dep-item:last-child { border-bottom: none; }
-        .dep-name { font-size: 15px; font-weight: 500; }
-        .dep-values { display: flex; gap: 10px; align-items: center; }
-        .dep-original { font-size: 13px; color: rgba(255,255,255,0.4); text-decoration: line-through; }
-        .dep-current { font-size: 18px; font-weight: 700; color: #f093fb; }
-        .dep-down { font-size: 12px; color: #f87171; background: rgba(248,113,113,0.2); padding: 2px 6px; border-radius: 6px; }
+        .dep-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .dep-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .dep-item:first-child { padding-top: 0; }
+        .dep-name { font-size: 16px; font-weight: 600; }
+        .dep-years { font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 2px; }
+        .dep-values { display: flex; gap: 12px; align-items: center; }
+        .dep-original { font-size: 14px; color: rgba(255,255,255,0.3); text-decoration: line-through; }
+        .dep-current { font-size: 22px; font-weight: 800; background: linear-gradient(135deg, #a78bfa, #f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .dep-down { font-size: 13px; color: #f87171; background: rgba(248,113,113,0.15); padding: 4px 10px; border-radius: 8px; font-weight: 600; }
         
         /* 分类 */
-        .cat-flex { display: flex; gap: 12px; align-items: flex-start; }
-        .pie-small { width: 80px; height: 80px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 4px 15px rgba(102,126,234,0.3); }
-        .cat-list { flex: 1; display: flex; flex-direction: column; gap: 4px; }
-        .cat-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; font-size: 14px; }
-        .cat-dot { width: 10px; height: 10px; border-radius: 3px; margin-right: 8px; display: inline-block; }
-        .cat-stats { color: rgba(255,255,255,0.5); font-size: 13px; }
+        .cat-flex { display: flex; gap: 14px; align-items: center; }
+        .pie-small { width: 90px; height: 90px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 8px 32px rgba(167,139,250,0.2); }
+        .cat-list { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+        .cat-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: 15px; }
+        .cat-dot { width: 12px; height: 12px; border-radius: 4px; margin-right: 10px; display: inline-block; }
+        .cat-stats { color: rgba(255,255,255,0.4); font-size: 14px; }
         .cat-stats .profit { color: #4ade80; }
         .cat-stats .loss { color: #f87171; }
         
         /* 月度 */
-        .month-row { position: relative; padding: 5px 0; display: flex; justify-content: space-between; font-size: 13px; }
-        .month-bar { position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(90deg, rgba(102,126,234,0.3), rgba(240,147,251,0.2)); border-radius: 4px; }
+        .month-row { position: relative; padding: 6px 0; display: flex; justify-content: space-between; font-size: 14px; }
+        .month-bar { position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(90deg, rgba(167,139,250,0.2), rgba(244,114,182,0.1)); border-radius: 6px; }
         
         /* 搜索 */
-        .search-bar { display: flex; gap: 6px; margin-bottom: 8px; }
-        .search-bar input { flex: 1; padding: 12px; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; font-size: 15px; background: rgba(255,255,255,0.05); color: #fff; }
-        .search-bar input::placeholder { color: rgba(255,255,255,0.4); }
-        .search-bar select { padding: 12px; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; font-size: 14px; background: rgba(255,255,255,0.05); color: #fff; }
+        .search-bar { display: flex; gap: 8px; margin-bottom: 10px; }
+        .search-bar input { flex: 1; padding: 14px 16px; border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; font-size: 16px; background: rgba(255,255,255,0.03); color: #fff; }
+        .search-bar input::placeholder { color: rgba(255,255,255,0.3); }
+        .search-bar select { padding: 14px; border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; font-size: 15px; background: rgba(255,255,255,0.03); color: #fff; }
         
-        .tabs { display: flex; background: rgba(255,255,255,0.05); border-radius: 10px; padding: 3px; margin-bottom: 8px; }
-        .tab { flex: 1; padding: 10px 4px; text-align: center; font-size: 14px; cursor: pointer; border-radius: 8px; color: rgba(255,255,255,0.6); }
-        .tab.active { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; font-weight: 600; }
+        .tabs { display: flex; background: rgba(255,255,255,0.03); border-radius: 14px; padding: 4px; margin-bottom: 10px; }
+        .tab { flex: 1; padding: 12px 6px; text-align: center; font-size: 14px; cursor: pointer; border-radius: 10px; color: rgba(255,255,255,0.4); font-weight: 600; }
+        .tab.active { background: linear-gradient(135deg, rgba(167,139,250,0.3), rgba(244,114,182,0.2)); color: #fff; }
         
-        .batch-bar { display: none; background: rgba(254,243,199,0.2); padding: 8px 10px; border-radius: 10px; margin-bottom: 8px; align-items: center; justify-content: space-between; font-size: 13px; border: 1px solid rgba(251,191,36,0.3); }
+        .batch-bar { display: none; background: rgba(251,191,36,0.1); padding: 10px 12px; border-radius: 12px; margin-bottom: 10px; align-items: center; justify-content: space-between; font-size: 14px; border: 1px solid rgba(251,191,36,0.2); }
         .batch-bar.active { display: flex; }
-        .batch-btn { padding: 6px 12px; border-radius: 6px; font-size: 12px; border: none; cursor: pointer; margin-left: 6px; }
-        .batch-btn.sell { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; }
+        .batch-btn { padding: 8px 14px; border-radius: 8px; font-size: 13px; border: none; cursor: pointer; margin-left: 8px; font-weight: 600; }
+        .batch-btn.sell { background: linear-gradient(135deg, #a78bfa, #f472b6); color: #fff; }
         .batch-btn.idle { background: rgba(251,191,36,0.2); color: #fbbf24; }
         .batch-btn.delete { background: rgba(248,113,113,0.2); color: #f87171; }
         
         /* 物品卡片 */
-        .asset-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-        .asset-card { background: rgba(255,255,255,0.06); border-radius: 14px; padding: 12px; border: 1px solid rgba(255,255,255,0.08); }
-        .asset-card.selected { border: 2px solid #667eea; box-shadow: 0 0 20px rgba(102,126,234,0.3); }
-        .asset-name { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
-        .asset-price { font-size: 24px; font-weight: 700; color: #667eea; margin: 6px 0; }
-        .asset-meta { font-size: 12px; color: rgba(255,255,255,0.5); }
-        .asset-status { font-size: 11px; padding: 3px 8px; border-radius: 6px; font-weight: 600; margin-left: 6px; }
-        .status-active { background: rgba(74,222,128,0.2); color: #4ade80; }
-        .status-idle { background: rgba(251,191,36,0.2); color: #fbbf24; }
-        .status-sold { background: rgba(102,126,234,0.2); color: #667eea; }
-        .asset-card .asset-actions { display: flex; gap: 6px; margin-top: 10px; }
-        .asset-card .btn { padding: 6px 12px; border-radius: 8px; font-size: 12px; border: none; cursor: pointer; font-weight: 500; }
-        .asset-card .btn-sell { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; }
-        .asset-card .btn-idle { background: rgba(251,191,36,0.2); color: #fbbf24; }
-        .asset-card .btn-edit { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); }
-        .asset-card .btn-delete { background: rgba(248,113,113,0.2); color: #f87171; }
-        .asset-card .checkbox { width: 18px; height: 18px; accent-color: #667eea; }
-        .expire-warn { background: rgba(251,191,36,0.2); font-size: 11px; padding: 2px 6px; border-radius: 4px; color: #fbbf24; margin-left: 6px; }
-        .tag { display: inline-block; background: rgba(102,126,234,0.2); color: #667eea; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-right: 4px; }
+        .asset-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .asset-card { background: rgba(255,255,255,0.03); border-radius: 18px; padding: 14px; border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px); }
+        .asset-card.selected { border: 2px solid rgba(167,139,250,0.5); box-shadow: 0 0 30px rgba(167,139,250,0.2); }
+        .asset-name { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+        .asset-price { font-size: 28px; font-weight: 800; background: linear-gradient(135deg, #a78bfa, #f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 8px 0; }
+        .asset-meta { font-size: 13px; color: rgba(255,255,255,0.4); }
+        .asset-status { font-size: 11px; padding: 4px 10px; border-radius: 8px; font-weight: 700; margin-left: 8px; }
+        .status-active { background: rgba(74,222,128,0.15); color: #4ade80; }
+        .status-idle { background: rgba(251,191,36,0.15); color: #fbbf24; }
+        .status-sold { background: rgba(167,139,250,0.15); color: #a78bfa; }
+        .asset-card .asset-actions { display: flex; gap: 8px; margin-top: 12px; }
+        .asset-card .btn { padding: 8px 14px; border-radius: 10px; font-size: 13px; border: none; cursor: pointer; font-weight: 600; }
+        .asset-card .btn-sell { background: linear-gradient(135deg, #a78bfa, #f472b6); color: #fff; }
+        .asset-card .btn-idle { background: rgba(251,191,36,0.15); color: #fbbf24; }
+        .asset-card .btn-edit { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.6); }
+        .asset-card .btn-delete { background: rgba(248,113,113,0.15); color: #f87171; }
+        .asset-card .checkbox { width: 20px; height: 20px; accent-color: #a78bfa; }
+        .expire-warn { background: rgba(251,191,36,0.15); font-size: 11px; padding: 3px 8px; border-radius: 6px; color: #fbbf24; margin-left: 8px; }
+        .tag { display: inline-block; background: rgba(167,139,250,0.15); color: #a78bfa; font-size: 11px; padding: 3px 8px; border-radius: 6px; margin-right: 4px; font-weight: 600; }
         
-        .fab { position: fixed; bottom: 20px; right: 14px; width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); color: white; font-size: 28px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(102,126,234,0.5); cursor: pointer; border: none; z-index: 100; }
-        .fab-menu { position: fixed; bottom: 86px; right: 14px; display: none; flex-direction: column; gap: 8px; z-index: 99; }
+        .fab { position: fixed; bottom: 24px; right: 16px; width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #a78bfa, #f472b6); color: white; font-size: 30px; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 32px rgba(167,139,250,0.4); cursor: pointer; border: none; z-index: 100; }
+        .fab-menu { position: fixed; bottom: 94px; right: 16px; display: none; flex-direction: column; gap: 10px; z-index: 99; }
         .fab-menu.active { display: flex; }
-        .fab-item { padding: 12px 18px; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 20px; font-size: 14px; color: #fff; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; }
-        .sync-bar { position: fixed; top: 10px; right: 10px; display: flex; gap: 6px; z-index: 100; }
-        .sync-btn { padding: 8px 12px; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; font-size: 13px; color: #fff; cursor: pointer; }
-        .sync-status { padding: 8px 12px; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 10px; font-size: 12px; color: rgba(255,255,255,0.6); }
+        .fab-item { padding: 14px 20px; background: rgba(255,255,255,0.06); backdrop-filter: blur(10px); border-radius: 24px; font-size: 15px; color: #fff; border: 1px solid rgba(255,255,255,0.08); cursor: pointer; font-weight: 600; }
+        .sync-bar { position: fixed; top: 12px; right: 12px; display: flex; gap: 8px; z-index: 100; }
+        .sync-btn { padding: 10px 14px; background: rgba(255,255,255,0.06); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; font-size: 14px; color: #fff; cursor: pointer; }
+        .sync-status { padding: 10px 14px; background: rgba(255,255,255,0.06); backdrop-filter: blur(10px); border-radius: 12px; font-size: 13px; color: rgba(255,255,255,0.5); }
         
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
         .modal.active { display: flex; }
-        .modal-content { background: linear-gradient(135deg, #1a1a2e, #16213e); border-radius: 20px; padding: 20px; width: 100%; max-width: 380px; max-height: 90vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-        .modal-header h2 { font-size: 20px; font-weight: 700; }
-        .modal-close { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.1); border: none; font-size: 18px; color: #fff; cursor: pointer; }
-        .form-group { margin-bottom: 14px; }
-        .form-group label { display: block; font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 6px; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; font-size: 16px; background: rgba(255,255,255,0.05); color: #fff; }
-        .form-group input::placeholder { color: rgba(255,255,255,0.3); }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .btn-submit { width: 100%; padding: 14px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; }
-        .empty-state { text-align: center; padding: 30px; color: rgba(255,255,255,0.4); font-size: 15px; grid-column: 1 / -1; }
-        #scanner-container { width: 100%; margin-bottom: 12px; border-radius: 12px; overflow: hidden; }
-        .camera-preview { width: 100%; border-radius: 12px; margin-bottom: 12px; }
-        .export-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
-        .export-btn { padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; text-align: center; cursor: pointer; font-size: 14px; color: #fff; }
+        .modal-content { background: linear-gradient(180deg, #1a1a2e 0%, #0f0f23 100%); border-radius: 24px; padding: 24px; width: 100%; max-width: 380px; max-height: 90vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.08); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h2 { font-size: 22px; font-weight: 800; background: linear-gradient(135deg, #fff, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .modal-close { width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.06); border: none; font-size: 20px; color: rgba(255,255,255,0.6); cursor: pointer; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 14px; color: rgba(255,255,255,0.5); margin-bottom: 8px; font-weight: 600; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 14px 16px; border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; font-size: 16px; background: rgba(255,255,255,0.03); color: #fff; }
+        .form-group input::placeholder { color: rgba(255,255,255,0.25); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .btn-submit { width: 100%; padding: 16px; background: linear-gradient(135deg, #a78bfa, #f472b6); color: white; border: none; border-radius: 14px; font-size: 17px; font-weight: 800; cursor: pointer; }
+        .empty-state { text-align: center; padding: 40px; color: rgba(255,255,255,0.3); font-size: 16px; grid-column: 1 / -1; }
+        #scanner-container { width: 100%; margin-bottom: 14px; border-radius: 14px; overflow: hidden; }
+        .camera-preview { width: 100%; border-radius: 14px; margin-bottom: 14px; }
+        .export-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+        .export-btn { padding: 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; text-align: center; cursor: pointer; font-size: 15px; color: #fff; font-weight: 600; }
     </style>
 </head>
 <body>
+    <div class="container">
     <div class="sync-bar">
         <div class="sync-status" id="sync-status">🔄</div>
         <button class="sync-btn" onclick="openSettingsModal()">⚙️</button>
@@ -131,7 +129,7 @@
     </div>
     
     <div class="header">
-        <h1>💰 资产追踪 Pro</h1>
+        <h1>💰 资产追踪</h1>
         <div class="stats">
             <div class="stat-card"><div class="label">总资产</div><div class="value" id="total-value">¥0</div></div>
             <div class="stat-card"><div class="label">数量</div><div class="value" id="total-count">0</div></div>
@@ -141,18 +139,10 @@
     </div>
     
     <div class="content">
-        <!-- 总体概览 + 折旧 -->
-        <div class="section">
-            <h3>📊 总体概览</h3>
-            <div class="grid-6">
-                <div class="grid-item"><div class="val" id="active-count">0</div><div class="lbl">使用中</div></div>
-                <div class="grid-item"><div class="val" id="sold-count">0</div><div class="lbl">已卖出</div></div>
-                <div class="grid-item"><div class="val" id="avg-daily">¥0</div><div class="lbl">日均成本</div></div>
-                <div class="grid-item"><div class="val" id="expire-count">0</div><div class="lbl">过期</div></div>
-                <div class="grid-item"><div class="val" id="high-value">0</div><div class="lbl">高价值</div></div>
-                <div class="grid-item" id="profit-item"><div class="val" id="profit-value">¥0</div><div class="lbl">卖出盈亏</div></div>
-            </div>
-            <div id="dep-list" style="margin-top:12px"></div>
+        <!-- 折旧 -->
+        <div class="section" id="dep-section" style="display:none">
+            <h3>📉 资产折旧</h3>
+            <div id="dep-list"></div>
         </div>
         
         <!-- 分类 -->
@@ -205,6 +195,7 @@
         </div>
         
         <div class="asset-grid" id="asset-list"><div class="empty-state">暂无资产</div></div>
+    </div>
     </div>
     
     <button class="fab" onclick="toggleFabMenu()">+</button>
@@ -284,7 +275,7 @@
         <div class="modal-content">
             <div class="modal-header"><h2>📷 扫码录入</h2><button class="modal-close" onclick="closeScanModal()">×</button></div>
             <div id="scanner-container"></div>
-            <div id="scan-result" style="display:none;background:rgba(102,126,234,0.2);padding:12px;border-radius:10px;font-size:15px;margin-bottom:12px"></div>
+            <div id="scan-result" style="display:none;background:rgba(167,139,250,0.15);padding:14px;border-radius:14px;font-size:16px;margin-bottom:14px"></div>
             <button class="btn-submit" id="use-scan-btn" style="display:none" onclick="useScanResult()">使用此条码</button>
         </div>
     </div>
@@ -296,7 +287,7 @@
             <video id="camera-preview" class="camera-preview" autoplay playsinline style="display:none"></video>
             <canvas id="photo-canvas" style="display:none"></canvas>
             <img id="captured-photo" class="camera-preview" style="display:none">
-            <div style="display:flex;gap:10px;margin-bottom:12px">
+            <div style="display:flex;gap:12px;margin-bottom:14px">
                 <button class="btn btn-sell" id="capture-btn" onclick="capturePhoto()" style="flex:1">📸 拍照</button>
                 <button class="btn btn-edit" id="retake-btn" style="display:none;flex:1" onclick="retakePhoto()">重拍</button>
             </div>
@@ -331,7 +322,7 @@
         let allAssets = [], currentFilter = 'all', selectedIds = new Set(), searchKeyword = '', searchCategory = '';
         let html5QrCode = null, cameraStream = null;
         
-        const colorMap = {'数码':'#667eea','电脑':'#764ba2','家电':'#f59e0b','奢侈品':'#ec4899','收藏':'#8b5cf6','日用品':'#10b981','食品':'#ef4444','金融':'#3b82f6','其他':'#6b7280'};
+        const colorMap = {'数码':'#a78bfa','电脑':'#f472b6','家电':'#fbbf24','奢侈品':'#ec4899','收藏':'#8b5cf6','日用品':'#4ade80','食品':'#f87171','金融':'#22d3ee','其他':'#6b7280'};
         
         function updateSyncStatus(s) { document.getElementById('sync-status').textContent = s === 'syncing' ? '🔄' : s === 'synced' ? '☁️' : s === 'error' ? '⚠️' : '📱'; }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
@@ -403,16 +394,6 @@
             document.getElementById('total-value').textContent = `¥${totalValue.toLocaleString()}`;
             document.getElementById('total-count').textContent = allAssets.length;
             document.getElementById('idle-count').textContent = idleCount;
-            document.getElementById('active-count').textContent = activeCount;
-            document.getElementById('sold-count').textContent = soldCount;
-            document.getElementById('avg-daily').textContent = (activeCount + idleCount) > 0 ? `¥${(totalDailyCost / (activeCount + idleCount)).toFixed(1)}` : '¥0';
-            document.getElementById('expire-count').textContent = expireCount;
-            document.getElementById('high-value').textContent = highValueCount;
-            
-            const profitItem = document.getElementById('profit-item');
-            const profitValue = document.getElementById('profit-value');
-            if (totalProfit >= 0) { profitItem.classList.remove('loss'); profitItem.classList.add('profit'); profitValue.textContent = `+¥${totalProfit.toLocaleString()}`; }
-            else { profitItem.classList.add('loss'); profitItem.classList.remove('profit'); profitValue.textContent = `-¥${Math.abs(totalProfit).toLocaleString()}`; }
             
             const profitCard = document.getElementById('profit-card');
             document.getElementById('total-profit').textContent = totalProfit >= 0 ? `+¥${totalProfit.toLocaleString()}` : `-¥${Math.abs(totalProfit).toLocaleString()}`;
@@ -421,9 +402,13 @@
             // 折旧列表
             if (depreciationList.length > 0) {
                 depreciationList.sort((a, b) => b.loss - a.loss);
-                document.getElementById('dep-list').innerHTML = '<div style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:8px">📉 资产折旧（当前价值）</div>' + depreciationList.map(d => `
+                document.getElementById('dep-section').style.display = 'block';
+                document.getElementById('dep-list').innerHTML = depreciationList.map(d => `
                     <div class="dep-item">
-                        <div class="dep-name">${d.name} <span style="font-size:11px;color:rgba(255,255,255,0.4)">${d.depYears}年折旧</span></div>
+                        <div>
+                            <div class="dep-name">${d.name}</div>
+                            <div class="dep-years">${d.depYears}年折旧</div>
+                        </div>
                         <div class="dep-values">
                             <span class="dep-original">¥${d.original.toLocaleString()}</span>
                             <span class="dep-current">¥${d.current.toLocaleString()}</span>
@@ -431,7 +416,7 @@
                         </div>
                     </div>
                 `).join('');
-            } else { document.getElementById('dep-list').innerHTML = ''; }
+            } else { document.getElementById('dep-section').style.display = 'none'; }
             
             // 分类
             const sortedCats = Object.entries(categoryStats).sort((a, b) => b[1].value - a[1].value);
@@ -506,7 +491,7 @@
                 const tags = a.tags ? a.tags.split(',').map(t => `<span class="tag">${t.trim()}</span>`).join('') : '';
                 
                 return `<div class="asset-card ${isSelected ? 'selected' : ''}">
-                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
                         <input type="checkbox" class="checkbox" ${isSelected ? 'checked' : ''} onclick="toggleSelect('${a.id}')">
                         <div class="asset-name">${a.name}</div>
                         <span class="asset-status status-${a.status || 'active'}">${a.status==='active'?'使用中':a.status==='idle'?'闲置':'已卖出'}</span>
