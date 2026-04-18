@@ -3,118 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#1a1a2e">
+    <meta name="theme-color" content="#6366f1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <title>资产追踪 Pro</title>
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); color: #1a1a2e; min-height: 100vh; position: relative; }
-        body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); pointer-events: none; z-index: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif; background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%); color: #1e293b; min-height: 100vh; }
         
-        .container { position: relative; z-index: 1; }
+        .container { max-width: 100%; }
         
         /* 顶部 */
-        .header { padding: 18px 14px 14px; background: rgba(255,255,255,0.15); backdrop-filter: blur(20px); }
-        .header h1 { font-size: 26px; font-weight: 800; margin-bottom: 14px; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.2); letter-spacing: -0.5px; }
-        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-        .stat-card { background: rgba(255,255,255,0.25); border-radius: 16px; padding: 16px 10px; text-align: center; border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(10px); }
-        .stat-card .label { font-size: 12px; color: rgba(255,255,255,0.8); font-weight: 600; }
-        .stat-card .value { font-size: 24px; font-weight: 800; margin-top: 6px; color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+        .header { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%); padding: 20px 16px 24px; color: #fff; }
+        .header h1 { font-size: 28px; font-weight: 800; margin-bottom: 16px; letter-spacing: -0.5px; }
+        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+        .stat-card { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border-radius: 16px; padding: 16px 12px; text-align: center; border: 1px solid rgba(255,255,255,0.3); }
+        .stat-card .label { font-size: 12px; opacity: 0.9; font-weight: 500; }
+        .stat-card .value { font-size: 22px; font-weight: 800; margin-top: 6px; }
         
-        .content { padding: 12px 10px; }
+        .content { padding: 16px 12px; }
         
         /* 板块 */
-        .section { background: rgba(255,255,255,0.9); border-radius: 18px; padding: 14px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.5); backdrop-filter: blur(10px); box-shadow: 0 8px 32px rgba(102,126,234,0.15); }
-        .section h3 { font-size: 14px; color: #667eea; margin-bottom: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .section { background: #fff; border-radius: 20px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 12px rgba(99,102,241,0.08); }
+        .section h3 { font-size: 15px; color: #6366f1; margin-bottom: 14px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
         
-        /* 折旧 - 紧凑4列 */
-        .dep-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-        .dep-item { background: linear-gradient(135deg, rgba(102,126,234,0.1), rgba(118,75,162,0.05)); border-radius: 12px; padding: 10px 8px; text-align: center; border: 1px solid rgba(102,126,234,0.15); }
-        .dep-name { font-size: 14px; font-weight: 700; color: #1a1a2e; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .dep-values { display: flex; flex-direction: column; gap: 2px; }
-        .dep-original { font-size: 11px; color: rgba(26,26,46,0.4); text-decoration: line-through; }
-        .dep-current { font-size: 18px; font-weight: 800; color: #667eea; }
-        .dep-down { font-size: 11px; color: #e74c3c; font-weight: 600; }
+        /* 总体概览 */
+        .overview-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .overview-item { background: linear-gradient(135deg, #f8fafc, #f1f5f9); border-radius: 14px; padding: 14px 10px; text-align: center; }
+        .overview-item .label { font-size: 12px; color: #64748b; font-weight: 600; }
+        .overview-item .value { font-size: 20px; font-weight: 800; margin-top: 4px; color: #1e293b; }
+        .overview-item .value.profit { color: #10b981; }
+        .overview-item .value.loss { color: #ef4444; }
+        
+        /* 折旧 */
+        .dep-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .dep-item { background: linear-gradient(135deg, #fef3f2, #fff1f2); border-radius: 14px; padding: 12px; border: 1px solid rgba(239,68,68,0.1); }
+        .dep-name { font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 6px; }
+        .dep-row { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
+        .dep-original { font-size: 13px; color: #94a3b8; text-decoration: line-through; }
+        .dep-current { font-size: 20px; font-weight: 800; color: #6366f1; }
+        .dep-down { font-size: 12px; color: #ef4444; background: rgba(239,68,68,0.1); padding: 3px 8px; border-radius: 6px; font-weight: 600; }
         
         /* 分类+月度并排 */
-        .dual-section { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .dual-section { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .dual-section .section { margin-bottom: 0; }
         
         /* 分类 */
-        .cat-list { display: flex; flex-direction: column; gap: 6px; }
-        .cat-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; font-size: 14px; border-bottom: 1px solid rgba(102,126,234,0.1); }
+        .cat-list { display: flex; flex-direction: column; gap: 8px; }
+        .cat-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f1f5f9; }
         .cat-row:last-child { border-bottom: none; }
-        .cat-dot { width: 10px; height: 10px; border-radius: 3px; margin-right: 8px; display: inline-block; }
-        .cat-stats { color: rgba(26,26,46,0.5); font-size: 13px; }
+        .cat-left { display: flex; align-items: center; gap: 8px; }
+        .cat-dot { width: 12px; height: 12px; border-radius: 4px; }
+        .cat-name { font-size: 14px; font-weight: 600; color: #1e293b; }
+        .cat-stats { font-size: 13px; color: #64748b; }
         
         /* 月度 */
-        .month-list { display: flex; flex-direction: column; gap: 6px; }
-        .month-row { position: relative; padding: 6px 8px; display: flex; justify-content: space-between; font-size: 13px; border-radius: 8px; background: rgba(102,126,234,0.05); }
+        .month-list { display: flex; flex-direction: column; gap: 8px; }
+        .month-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: linear-gradient(135deg, #f8fafc, #f1f5f9); border-radius: 10px; }
+        .month-name { font-size: 14px; font-weight: 600; color: #1e293b; }
+        .month-value { font-size: 14px; font-weight: 700; color: #6366f1; }
         
         /* 搜索 */
-        .search-bar { display: flex; gap: 8px; margin-bottom: 10px; }
-        .search-bar input { flex: 1; padding: 14px 16px; border: 1px solid rgba(255,255,255,0.3); border-radius: 14px; font-size: 16px; background: rgba(255,255,255,0.9); color: #1a1a2e; }
-        .search-bar input::placeholder { color: rgba(26,26,46,0.4); }
-        .search-bar select { padding: 14px; border: 1px solid rgba(255,255,255,0.3); border-radius: 14px; font-size: 15px; background: rgba(255,255,255,0.9); color: #1a1a2e; }
+        .search-bar { display: flex; gap: 8px; margin-bottom: 12px; }
+        .search-bar input { flex: 1; padding: 14px 16px; border: 2px solid #e2e8f0; border-radius: 14px; font-size: 16px; background: #fff; color: #1e293b; transition: border-color 0.2s; }
+        .search-bar input:focus { outline: none; border-color: #6366f1; }
+        .search-bar select { padding: 14px; border: 2px solid #e2e8f0; border-radius: 14px; font-size: 15px; background: #fff; color: #1e293b; }
         
-        .tabs { display: flex; background: rgba(255,255,255,0.9); border-radius: 14px; padding: 4px; margin-bottom: 10px; }
-        .tab { flex: 1; padding: 12px 6px; text-align: center; font-size: 14px; cursor: pointer; border-radius: 10px; color: rgba(26,26,46,0.5); font-weight: 600; }
-        .tab.active { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; }
+        .tabs { display: flex; background: #fff; border-radius: 14px; padding: 4px; margin-bottom: 12px; box-shadow: 0 2px 12px rgba(99,102,241,0.08); }
+        .tab { flex: 1; padding: 12px 6px; text-align: center; font-size: 14px; cursor: pointer; border-radius: 10px; color: #64748b; font-weight: 600; transition: all 0.2s; }
+        .tab.active { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; }
         
-        .batch-bar { display: none; background: rgba(251,191,36,0.2); padding: 10px 12px; border-radius: 12px; margin-bottom: 10px; align-items: center; justify-content: space-between; font-size: 14px; border: 1px solid rgba(251,191,36,0.3); }
+        .batch-bar { display: none; background: linear-gradient(135deg, #fef3c7, #fde68a); padding: 10px 14px; border-radius: 14px; margin-bottom: 12px; align-items: center; justify-content: space-between; font-size: 14px; }
         .batch-bar.active { display: flex; }
-        .batch-btn { padding: 8px 14px; border-radius: 8px; font-size: 13px; border: none; cursor: pointer; margin-left: 8px; font-weight: 600; }
-        .batch-btn.sell { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; }
-        .batch-btn.idle { background: rgba(251,191,36,0.3); color: #b45309; }
-        .batch-btn.delete { background: rgba(231,76,60,0.2); color: #e74c3c; }
+        .batch-btn { padding: 8px 14px; border-radius: 10px; font-size: 13px; border: none; cursor: pointer; margin-left: 8px; font-weight: 600; }
+        .batch-btn.sell { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; }
+        .batch-btn.idle { background: #fbbf24; color: #78350f; }
+        .batch-btn.delete { background: #ef4444; color: #fff; }
         
         /* 物品卡片 */
-        .asset-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-        .asset-card { background: rgba(255,255,255,0.95); border-radius: 18px; padding: 14px; border: 1px solid rgba(255,255,255,0.5); backdrop-filter: blur(10px); box-shadow: 0 4px 20px rgba(102,126,234,0.1); }
-        .asset-card.selected { border: 2px solid #667eea; box-shadow: 0 0 30px rgba(102,126,234,0.3); }
-        .asset-name { font-size: 17px; font-weight: 700; margin-bottom: 8px; color: #1a1a2e; }
-        .asset-price { font-size: 28px; font-weight: 800; color: #667eea; margin: 8px 0; }
-        .asset-meta { font-size: 13px; color: rgba(26,26,46,0.5); }
-        .asset-status { font-size: 11px; padding: 4px 10px; border-radius: 8px; font-weight: 700; margin-left: 8px; }
-        .status-active { background: rgba(74,222,128,0.2); color: #16a34a; }
-        .status-idle { background: rgba(251,191,36,0.2); color: #b45309; }
-        .status-sold { background: rgba(102,126,234,0.2); color: #667eea; }
-        .asset-card .asset-actions { display: flex; gap: 8px; margin-top: 12px; }
-        .asset-card .btn { padding: 8px 14px; border-radius: 10px; font-size: 13px; border: none; cursor: pointer; font-weight: 600; }
-        .asset-card .btn-sell { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; }
-        .asset-card .btn-idle { background: rgba(251,191,36,0.2); color: #b45309; }
-        .asset-card .btn-edit { background: rgba(102,126,234,0.15); color: #667eea; }
-        .asset-card .btn-delete { background: rgba(231,76,60,0.15); color: #e74c3c; }
-        .asset-card .checkbox { width: 20px; height: 20px; accent-color: #667eea; }
-        .expire-warn { background: rgba(251,191,36,0.2); font-size: 11px; padding: 3px 8px; border-radius: 6px; color: #b45309; margin-left: 8px; }
-        .tag { display: inline-block; background: rgba(102,126,234,0.15); color: #667eea; font-size: 11px; padding: 3px 8px; border-radius: 6px; margin-right: 4px; font-weight: 600; }
+        .asset-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .asset-card { background: #fff; border-radius: 18px; padding: 16px; box-shadow: 0 2px 12px rgba(99,102,241,0.08); border: 2px solid transparent; transition: all 0.2s; }
+        .asset-card.selected { border-color: #6366f1; box-shadow: 0 4px 20px rgba(99,102,241,0.2); }
+        .asset-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .asset-name { font-size: 16px; font-weight: 700; color: #1e293b; flex: 1; }
+        .asset-status { font-size: 11px; padding: 4px 10px; border-radius: 8px; font-weight: 700; }
+        .status-active { background: linear-gradient(135deg, #d1fae5, #a7f3d0); color: #065f46; }
+        .status-idle { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #78350f; }
+        .status-sold { background: linear-gradient(135deg, #e0e7ff, #c7d2fe); color: #3730a3; }
+        .asset-price { font-size: 26px; font-weight: 800; color: #6366f1; margin: 10px 0; }
+        .asset-meta { font-size: 13px; color: #64748b; margin-bottom: 12px; }
+        .asset-actions { display: flex; gap: 8px; }
+        .btn { padding: 8px 14px; border-radius: 10px; font-size: 13px; border: none; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+        .btn-sell { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; }
+        .btn-idle { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #78350f; }
+        .btn-edit { background: #f1f5f9; color: #475569; }
+        .btn-delete { background: #fef2f2; color: #dc2626; }
+        .checkbox { width: 20px; height: 20px; accent-color: #6366f1; }
+        .expire-warn { background: linear-gradient(135deg, #fef3c7, #fde68a); font-size: 11px; padding: 3px 8px; border-radius: 6px; color: #78350f; margin-left: 8px; }
+        .tag { display: inline-block; background: linear-gradient(135deg, #e0e7ff, #c7d2fe); color: #3730a3; font-size: 11px; padding: 3px 8px; border-radius: 6px; margin-right: 4px; font-weight: 600; }
         
-        .fab { position: fixed; bottom: 24px; right: 16px; width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); color: white; font-size: 30px; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 32px rgba(102,126,234,0.4); cursor: pointer; border: none; z-index: 100; }
+        .fab { position: fixed; bottom: 24px; right: 16px; width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; font-size: 30px; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(99,102,241,0.4); cursor: pointer; border: none; z-index: 100; }
         .fab-menu { position: fixed; bottom: 94px; right: 16px; display: none; flex-direction: column; gap: 10px; z-index: 99; }
         .fab-menu.active { display: flex; }
-        .fab-item { padding: 14px 20px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 24px; font-size: 15px; color: #1a1a2e; border: 1px solid rgba(255,255,255,0.5); cursor: pointer; font-weight: 600; box-shadow: 0 4px 20px rgba(102,126,234,0.15); }
+        .fab-item { padding: 14px 20px; background: #fff; border-radius: 24px; font-size: 15px; color: #1e293b; border: 2px solid #e2e8f0; cursor: pointer; font-weight: 600; box-shadow: 0 4px 16px rgba(99,102,241,0.15); }
         .sync-bar { position: fixed; top: 12px; right: 12px; display: flex; gap: 8px; z-index: 100; }
-        .sync-btn { padding: 10px 14px; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); border-radius: 12px; font-size: 14px; color: #1a1a2e; cursor: pointer; }
-        .sync-status { padding: 10px 14px; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-radius: 12px; font-size: 13px; color: rgba(26,26,46,0.6); }
+        .sync-btn { padding: 10px 14px; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border: 2px solid rgba(255,255,255,0.5); border-radius: 12px; font-size: 14px; color: #1e293b; cursor: pointer; }
+        .sync-status { padding: 10px 14px; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-radius: 12px; font-size: 13px; color: #64748b; }
         
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(102,126,234,0.3); backdrop-filter: blur(10px); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(99,102,241,0.2); backdrop-filter: blur(8px); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
         .modal.active { display: flex; }
-        .modal-content { background: #fff; border-radius: 24px; padding: 24px; width: 100%; max-width: 380px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(102,126,234,0.3); }
+        .modal-content { background: #fff; border-radius: 24px; padding: 24px; width: 100%; max-width: 380px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(99,102,241,0.25); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .modal-header h2 { font-size: 22px; font-weight: 800; color: #667eea; }
-        .modal-close { width: 36px; height: 36px; border-radius: 50%; background: rgba(102,126,234,0.1); border: none; font-size: 20px; color: rgba(26,26,46,0.5); cursor: pointer; }
+        .modal-header h2 { font-size: 22px; font-weight: 800; color: #6366f1; }
+        .modal-close { width: 36px; height: 36px; border-radius: 50%; background: #f1f5f9; border: none; font-size: 20px; color: #64748b; cursor: pointer; }
         .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; font-size: 14px; color: rgba(26,26,46,0.6); margin-bottom: 8px; font-weight: 600; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 14px 16px; border: 1px solid rgba(102,126,234,0.2); border-radius: 14px; font-size: 16px; background: rgba(102,126,234,0.05); color: #1a1a2e; }
-        .form-group input::placeholder { color: rgba(26,26,46,0.3); }
+        .form-group label { display: block; font-size: 14px; color: #475569; margin-bottom: 8px; font-weight: 600; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 14px 16px; border: 2px solid #e2e8f0; border-radius: 14px; font-size: 16px; background: #f8fafc; color: #1e293b; transition: border-color 0.2s; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: #6366f1; background: #fff; }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .btn-submit { width: 100%; padding: 16px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 14px; font-size: 17px; font-weight: 800; cursor: pointer; }
-        .empty-state { text-align: center; padding: 40px; color: rgba(26,26,46,0.4); font-size: 16px; grid-column: 1 / -1; }
+        .btn-submit { width: 100%; padding: 16px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; border: none; border-radius: 14px; font-size: 17px; font-weight: 800; cursor: pointer; }
+        .empty-state { text-align: center; padding: 40px; color: #94a3b8; font-size: 16px; grid-column: 1 / -1; }
         #scanner-container { width: 100%; margin-bottom: 14px; border-radius: 14px; overflow: hidden; }
         .camera-preview { width: 100%; border-radius: 14px; margin-bottom: 14px; }
         .export-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
-        .export-btn { padding: 14px; background: rgba(102,126,234,0.1); border: 1px solid rgba(102,126,234,0.2); border-radius: 14px; text-align: center; cursor: pointer; font-size: 15px; color: #667eea; font-weight: 600; }
+        .export-btn { padding: 14px; background: linear-gradient(135deg, #f8fafc, #f1f5f9); border: 2px solid #e2e8f0; border-radius: 14px; text-align: center; cursor: pointer; font-size: 15px; color: #6366f1; font-weight: 600; }
     </style>
 </head>
 <body>
@@ -136,6 +148,12 @@
     </div>
     
     <div class="content">
+        <!-- 总体概览 -->
+        <div class="section">
+            <h3>📊 总体概览</h3>
+            <div class="overview-grid" id="overview-grid"></div>
+        </div>
+        
         <!-- 折旧 -->
         <div class="section" id="dep-section" style="display:none">
             <h3>📉 资产折旧</h3>
@@ -269,7 +287,7 @@
         <div class="modal-content">
             <div class="modal-header"><h2>📷 扫码录入</h2><button class="modal-close" onclick="closeScanModal()">×</button></div>
             <div id="scanner-container"></div>
-            <div id="scan-result" style="display:none;background:rgba(102,126,234,0.1);padding:14px;border-radius:14px;font-size:16px;margin-bottom:14px"></div>
+            <div id="scan-result" style="display:none;background:linear-gradient(135deg,#e0e7ff,#c7d2fe);padding:14px;border-radius:14px;font-size:16px;margin-bottom:14px"></div>
             <button class="btn-submit" id="use-scan-btn" style="display:none" onclick="useScanResult()">使用此条码</button>
         </div>
     </div>
@@ -316,7 +334,7 @@
         let allAssets = [], currentFilter = 'all', selectedIds = new Set(), searchKeyword = '', searchCategory = '';
         let html5QrCode = null, cameraStream = null;
         
-        const colorMap = {'数码':'#667eea','电脑':'#764ba2','家电':'#f093fb','奢侈品':'#ec4899','收藏':'#8b5cf6','日用品':'#4ade80','食品':'#f87171','金融':'#22d3ee','其他':'#6b7280'};
+        const colorMap = {'数码':'#6366f1','电脑':'#8b5cf6','家电':'#a855f7','奢侈品':'#ec4899','收藏':'#14b8a6','日用品':'#10b981','食品':'#f59e0b','金融':'#06b6d4','其他':'#64748b'};
         
         function updateSyncStatus(s) { document.getElementById('sync-status').textContent = s === 'syncing' ? '🔄' : s === 'synced' ? '☁️' : s === 'error' ? '⚠️' : '📱'; }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
@@ -364,7 +382,6 @@
                         const days = Math.max(1, Math.floor((today - new Date(buyDate)) / 86400000));
                         totalDailyCost += (a.price || 0) / days;
                         
-                        // 折旧 - 使用自定义年限
                         const depYears = a.dep_years || 5;
                         if (days > 30 && a.price > 100) {
                             const original = a.price || 0;
@@ -390,17 +407,30 @@
             document.getElementById('idle-count').textContent = idleCount;
             document.getElementById('total-profit').textContent = totalProfit >= 0 ? `+¥${totalProfit.toLocaleString()}` : `-¥${Math.abs(totalProfit).toLocaleString()}`;
             
-            // 折旧列表 - 紧凑4列
+            // 总体概览
+            document.getElementById('overview-grid').innerHTML = `
+                <div class="overview-item"><div class="label">使用中</div><div class="value">${activeCount}</div></div>
+                <div class="overview-item"><div class="label">已卖出</div><div class="value">${soldCount}</div></div>
+                <div class="overview-item"><div class="label">日均成本</div><div class="value">¥${Math.round(totalDailyCost)}</div></div>
+                <div class="overview-item"><div class="label">即将过期</div><div class="value">${expireCount}</div></div>
+                <div class="overview-item"><div class="label">高价值</div><div class="value">${highValueCount}</div></div>
+                <div class="overview-item"><div class="label">卖出盈亏</div><div class="value ${totalProfit >= 0 ? 'profit' : 'loss'}">${totalProfit >= 0 ? '+' : ''}¥${totalProfit.toLocaleString()}</div></div>
+            `;
+            
+            // 折旧列表
             if (depreciationList.length > 0) {
                 depreciationList.sort((a, b) => b.loss - a.loss);
                 document.getElementById('dep-section').style.display = 'block';
                 document.getElementById('dep-list').innerHTML = depreciationList.map(d => `
                     <div class="dep-item">
                         <div class="dep-name">${d.name}</div>
-                        <div class="dep-values">
-                            <div class="dep-original">¥${d.original.toLocaleString()}</div>
-                            <div class="dep-current">¥${d.current.toLocaleString()}</div>
-                            <div class="dep-down">-¥${d.loss}</div>
+                        <div class="dep-row">
+                            <span class="dep-original">¥${d.original.toLocaleString()}</span>
+                            <span class="dep-current">¥${d.current.toLocaleString()}</span>
+                        </div>
+                        <div class="dep-row">
+                            <span style="font-size:12px;color:#94a3b8">${d.depYears}年折旧</span>
+                            <span class="dep-down">-¥${d.loss}</span>
                         </div>
                     </div>
                 `).join('');
@@ -413,7 +443,7 @@
                 document.getElementById('cat-section').style.display = 'block';
                 document.getElementById('cat-list').innerHTML = pieData.slice(0, 5).map(([cat, s]) => `
                     <div class="cat-row">
-                        <div><span class="cat-dot" style="background:${s.color}"></span>${cat}</div>
+                        <div class="cat-left"><span class="cat-dot" style="background:${s.color}"></span><span class="cat-name">${cat}</span></div>
                         <div class="cat-stats">${s.count}件</div>
                     </div>
                 `).join('');
@@ -425,8 +455,8 @@
                 document.getElementById('month-section').style.display = 'block';
                 document.getElementById('month-list').innerHTML = sortedMonths.map(([m, s]) => `
                     <div class="month-row">
-                        <div>${m.slice(5)}</div>
-                        <div>¥${s.value.toLocaleString()}</div>
+                        <div class="month-name">${m}</div>
+                        <div class="month-value">¥${s.value.toLocaleString()}</div>
                     </div>
                 `).join('');
             } else { document.getElementById('month-section').style.display = 'none'; }
@@ -472,7 +502,7 @@
                 const tags = a.tags ? a.tags.split(',').map(t => `<span class="tag">${t.trim()}</span>`).join('') : '';
                 
                 return `<div class="asset-card ${isSelected ? 'selected' : ''}">
-                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+                    <div class="asset-header">
                         <input type="checkbox" class="checkbox" ${isSelected ? 'checked' : ''} onclick="toggleSelect('${a.id}')">
                         <div class="asset-name">${a.name}</div>
                         <span class="asset-status status-${a.status || 'active'}">${a.status==='active'?'使用中':a.status==='idle'?'闲置':'已卖出'}</span>
