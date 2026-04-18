@@ -598,7 +598,7 @@
         loadData();
         
         document.addEventListener('visibilitychange', () => { if (!document.hidden) loadData(); });
-        window.addEventListener('focus', () => loadData();
+        window.addEventListener('focus', () => loadData());
         
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/asset-tracker/sw.js').then(reg => reg.update()).catch(() => {});
