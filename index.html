@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="资产追踪">
+    <link rel="manifest" href="/asset-tracker/manifest.json">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23667eea' width='100' height='100' rx='20'/><text x='50' y='65' font-size='50' text-anchor='middle' fill='white'>💰</text></svg>">
+    <title>个人资产追踪 Pro</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f7; color: #1d1d1f; min-height: 100vh; padding-bottom: 100px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 0 0 20px 20px; }
+        .header h1 { font-size: 20px; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .stat-card { background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border-radius: 12px; padding: 12px; }
+        .stat-card .label { font-size: 12px; opacity: 0.9; }
+        .stat-card .value { font-size: 24px; font-weight: 700; margin-top: 4px; }
+        .stat-card.profit .value { color: #4ade80; }
+        .stat-card.profit.loss .value { color: #f87171; }
+        .content { padding: 20px; max-width: 600px; margin: 0 auto; }
+        .tabs { display: flex; background: white; border-radius: 12px; padding: 4px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); overflow-x: auto; }
+        .tab { flex: 1; padding: 10px; text-align: center; font-size: 13px; cursor: pointer; border-radius: 8px; transition: all 0.2s; white-space: nowrap; }
+        .tab.active { background: #667eea; color: white; }
+        .section-title { font-size: 16px; font-weight: 600; margin: 20px 0 12px; display: flex; align-items: center; gap: 8px; }
+        .asset-list { display: flex; flex-direction: column; gap: 12px; }
+        .asset-card { background: white; border-radius: 16px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .asset-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px; }
+        .asset-name { font-size: 16px; font-weight: 600; }
+        .asset-status { font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: 500; }
+        .status-active { background: #dcfce7; color: #16a34a; }
+        .status-idle { background: #fef3c7; color: #d97706; }
+        .status-sold { background: #e0e7ff; color: #4f46e5; }
+        .status-expired { background: #fee2e2; color: #dc2626; }
+        .asset-price { font-size: 24px; font-weight: 700; color: #667eea; }
+        .asset-meta { display: flex; gap: 16px; margin-top: 8px; font-size: 12px; color: #86868b; }
+        .asset-cost { margin-top: 12px; padding-top: 12px; border-top: 1px solid #f0f0f5; display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 13px; }
+        .cost-item .cost-label { color: #86868b; font-size: 11px; }
+        .cost-item .cost-value { font-weight: 600; margin-top: 2px; }
+        .profit { color: #16a34a; }
+        .loss { color: #dc2626; }
+        .asset-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+        .btn { padding: 8px 12px; border-radius: 8px; font-size: 12px; border: none; cursor: pointer; transition: all 0.2s; }
+        .btn-sell { background: #667eea; color: white; }
+        .btn-idle { background: #fef3c7; color: #d97706; }
+        .btn-active { background: #dcfce7; color: #16a34a; }
+        .btn-edit { background: #f0f0f5; color: #666; }
+        .btn-delete { background: #fee2e2; color: #dc2626; }
+        .btn-expire { background: #fee2e2; color: #dc2626; }
+        .fab { position: fixed; bottom: 30px; right: 20px; width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-size: 28px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); cursor: pointer; border: none; z-index: 100; }
+        .sync-bar { position: fixed; top: 10px; right: 10px; display: flex; gap: 8px; z-index: 100; }
+        .sync-btn { padding: 8px 12px; background: white; border: none; border-radius: 8px; font-size: 12px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .sync-status { padding: 8px 12px; background: white; border-radius: 8px; font-size: 11px; color: #86868b; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; border-radius: 20px; padding: 24px; width: 100%; max-width: 400px; max-height: 90vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h2 { font-size: 18px; }
+        .modal-close { width: 32px; height: 32px; border-radius: 50%; background: #f0f0f5; border: none; font-size: 18px; cursor: pointer; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 13px; color: #86868b; margin-bottom: 6px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 10px; font-size: 15px; outline: none; }
+        .form-group input:focus, .form-group select:focus { border-color: #667eea; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .btn-submit { width: 100%; padding: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; }
+        .empty-state { text-align: center; padding: 60px 20px; color: #86868b; }
+        .empty-state .icon { font-size: 48px; margin-bottom: 16px; }
+        .file-input { display: none; }
+        .quick-stats { background: white; border-radius: 16px; padding: 16px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .quick-stats h3 { font-size: 14px; color: #86868b; margin-bottom: 12px; }
+        .quick-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; text-align: center; }
+        .quick-stat-item .qs-value { font-size: 18px; font-weight: 700; color: #667eea; }
+        .quick-stat-item .qs-label { font-size: 11px; color: #86868b; margin-top: 2px; }
+        .expire-warning { background: #fef3c7; border-left: 3px solid #f59e0b; padding: 8px 12px; margin-top: 8px; font-size: 12px; border-radius: 0 8px 8px 0; }
+        .tag { display: inline-block; background: #e0e7ff; color: #4f46e5; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-right: 4px; }
+    </style>
+</head>
+<body>
+    <div class="sync-bar">
+        <div class="sync-status" id="sync-status">🔄 加载中...</div>
+        <button class="sync-btn" onclick="openSettingsModal()">⚙️</button>
+        <button class="sync-btn" onclick="exportData()">📤</button>
+        <button class="sync-btn" onclick="document.getElementById('import-file').click()">📥</button>
+        <input type="file" id="import-file" class="file-input" accept=".json" onchange="importData(event)">
+    </div>
+    
+    <div class="header">
+        <h1>💰 个人资产追踪 Pro</h1>
+        <div class="stats">
+            <div class="stat-card"><div class="label">总资产</div><div class="value" id="total-value">¥0</div></div>
+            <div class="stat-card"><div class="label">物品数量</div><div class="value" id="total-count">0</div></div>
+            <div class="stat-card"><div class="label">闲置中</div><div class="value" id="idle-count">0</div></div>
+            <div class="stat-card profit" id="profit-card"><div class="label">已卖出盈亏</div><div class="value" id="total-profit">¥0</div></div>
+        </div>
+    </div>
+    
+    <div class="content">
+        <!-- 快速统计 -->
+        <div class="quick-stats">
+            <h3>📊 快速分析</h3>
+            <div class="quick-stats-grid">
+                <div class="quick-stat-item"><div class="qs-value" id="avg-daily-cost">¥0</div><div class="qs-label">平均日均成本</div></div>
+                <div class="quick-stat-item"><div class="qs-value" id="expire-count">0</div><div class="qs-label">即将过期</div></div>
+                <div class="quick-stat-item"><div class="qs-value" id="high-value-count">0</div><div class="qs-label">高价值物品</div></div>
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" data-filter="all">全部</div>
+            <div class="tab" data-filter="active">使用中</div>
+            <div class="tab" data-filter="idle">闲置</div>
+            <div class="tab" data-filter="sold">已卖出</div>
+            <div class="tab" data-filter="expiring">即将过期</div>
+        </div>
+        
+        <div class="asset-list" id="asset-list"><div class="empty-state"><div class="icon">📦</div>加载中...</div></div>
+    </div>
+    
+    <button class="fab" id="add-btn">+</button>
+    
+    <div class="modal" id="settings-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>⚙️ 同步设置</h2>
+                <button class="modal-close" onclick="document.getElementById('settings-modal').classList.remove('active')">×</button>
+            </div>
+            <div class="form-group">
+                <label>GitHub Token（必填）</label>
+                <input type="password" id="settings-token" placeholder="ghp_xxxx...">
+            </div>
+            <div class="form-group">
+                <label>Gist ID（多设备同步用，留空自动创建）</label>
+                <input type="text" id="settings-gist-id" placeholder="留空自动创建新Gist">
+            </div>
+            <button class="btn-submit" onclick="saveSettings()">保存并刷新数据</button>
+            <div style="margin-top:15px;font-size:12px;color:#86868b">
+                <strong>当前 Gist ID:</strong> <span id="current-gist-id">-</span><br>
+                <strong>同步状态:</strong> <span id="current-status">-</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="add-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">添加资产</h2>
+                <button class="modal-close" id="close-modal">×</button>
+            </div>
+            <form id="asset-form">
+                <input type="hidden" id="asset-id">
+                <div class="form-group"><label>物品名称 *</label><input type="text" id="asset-name" placeholder="例如：iPhone 15 Pro" required></div>
+                <div class="form-row">
+                    <div class="form-group"><label>购买价格(元) *</label><input type="number" id="asset-price" placeholder="8999" required min="0"></div>
+                    <div class="form-group"><label>购买日期</label><input type="date" id="asset-date"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>分类</label>
+                        <select id="asset-category">
+                            <option value="数码">📱 数码</option>
+                            <option value="电脑">💻 电脑</option>
+                            <option value="家电">🎮 家电</option>
+                            <option value="奢侈品">👜 奢侈品</option>
+                            <option value="收藏">🎨 收藏</option>
+                            <option value="日用品">🧴 日用品</option>
+                            <option value="食品">🍎 食品/保健品</option>
+                            <option value="金融">📈 金融资产</option>
+                            <option value="其他">📦 其他</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>状态</label>
+                        <select id="asset-status">
+                            <option value="active">使用中</option>
+                            <option value="idle">闲置</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>过期日期</label><input type="date" id="asset-expire" placeholder="食品/保健品等"></div>
+                    <div class="form-group"><label>数量</label><input type="number" id="asset-quantity" value="1" min="1"></div>
+                </div>
+                <div class="form-group"><label>标签（逗号分隔）</label><input type="text" id="asset-tags" placeholder="例如：自用,送礼,投资"></div>
+                <div class="form-group"><label>备注</label><textarea id="asset-note" rows="2" placeholder="可选备注信息"></textarea></div>
+                <button type="submit" class="btn-submit">保存</button>
+            </form>
+        </div>
+    </div>
+    
+    <div class="modal" id="sell-modal">
+        <div class="modal-content">
+            <div class="modal-header"><h2>卖出资产</h2><button class="modal-close" id="close-sell-modal">×</button></div>
+            <form id="sell-form">
+                <input type="hidden" id="sell-asset-id">
+                <div class="form-group"><label>卖出价格(元)</label><input type="number" id="sell-price" placeholder="输入卖出价格" required min="0"></div>
+                <div class="form-group"><label>卖出日期</label><input type="date" id="sell-date"></div>
+                <div class="form-group"><label>买家（可选）</label><input type="text" id="sell-buyer" placeholder="闲鱼/朋友/其他"></div>
+                <button type="submit" class="btn-submit">确认卖出</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ========== 配置 ==========
+        const GIST_ID_KEY = 'asset_tracker_gist_id';
+        const TOKEN_KEY = 'asset_tracker_token';
+        const LOCAL_KEY = 'asset_tracker_data';
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlToken = urlParams.get('token');
+        const urlGist = urlParams.get('gist');
+        
+        if (urlToken) localStorage.setItem(TOKEN_KEY, urlToken);
+        if (urlGist) localStorage.setItem(GIST_ID_KEY, urlGist);
+        
+        let githubToken = localStorage.getItem(TOKEN_KEY) || '';
+        let gistId = localStorage.getItem(GIST_ID_KEY) || '';
+        let allAssets = [];
+        let currentFilter = 'all';
+        let isSyncing = false;
+        
+        // ========== 状态更新 ==========
+        function updateSyncStatus(status) {
+            const el = document.getElementById('sync-status');
+            const statusEl = document.getElementById('current-status');
+            if (status === 'syncing') { el.textContent = '🔄 同步中...'; if(statusEl) statusEl.textContent = '同步中'; }
+            else if (status === 'synced') { el.textContent = '☁️ 已同步'; if(statusEl) statusEl.textContent = '已同步'; }
+            else if (status === 'error') { el.textContent = '⚠️ 同步失败'; if(statusEl) statusEl.textContent = '同步失败'; }
+            else if (status === 'offline') { el.textContent = '📱 本地模式'; if(statusEl) statusEl.textContent = '本地模式'; }
+            else if (status === 'loading') { el.textContent = '🔄 加载中...'; if(statusEl) statusEl.textContent = '加载中'; }
+        }
+        
+        // ========== 核心同步逻辑 ==========
+        async function loadData() {
+            updateSyncStatus('loading');
+            try {
+                const res = await fetch(`https://api.github.com/gists/${gistId}?t=${Date.now()}`, {
+                    headers: { 'Authorization': `token ${githubToken}` }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.files && data.files['assets.json']) {
+                        allAssets = JSON.parse(data.files['assets.json'].content);
+                        localStorage.setItem(LOCAL_KEY, JSON.stringify(allAssets));
+                        updateSyncStatus('synced');
+                        renderAssets();
+                        updateStats();
+                        return;
+                    }
+                }
+            } catch(e) { console.error('Cloud load failed:', e); }
+            
+            const localData = localStorage.getItem(LOCAL_KEY);
+            if (localData) { try { allAssets = JSON.parse(localData); } catch(e2) { allAssets = []; } }
+            updateSyncStatus('error');
+            renderAssets();
+            updateStats();
+        }
+        
+        async function saveData() {
+            localStorage.setItem(LOCAL_KEY, JSON.stringify(allAssets));
+            if (githubToken && gistId) {
+                if (isSyncing) return;
+                isSyncing = true;
+                updateSyncStatus('syncing');
+                try {
+                    const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+                        method: 'PATCH',
+                        headers: { 'Authorization': `token ${githubToken}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ files: { 'assets.json': { content: JSON.stringify(allAssets, null, 2) } } })
+                    });
+                    if (res.ok) updateSyncStatus('synced');
+                    else throw new Error('Save failed');
+                } catch(e) { console.error('Save to gist failed:', e); updateSyncStatus('error'); }
+                isSyncing = false;
+            } else { updateSyncStatus('offline'); }
+        }
+        
+        // ========== 设置 ==========
+        function openSettingsModal() {
+            document.getElementById('settings-token').value = githubToken;
+            document.getElementById('settings-gist-id').value = gistId;
+            updateSettingsDisplay();
+            document.getElementById('settings-modal').classList.add('active');
+        }
+        
+        function updateSettingsDisplay() {
+            const gistIdEl = document.getElementById('current-gist-id');
+            const statusEl = document.getElementById('current-status');
+            if (gistIdEl) gistIdEl.textContent = gistId || '未设置';
+            if (statusEl) statusEl.textContent = githubToken ? (gistId ? '已同步' : '本地模式') : '本地模式';
+        }
+        
+        async function saveSettings() {
+            const newToken = document.getElementById('settings-token').value.trim();
+            const newGistId = document.getElementById('settings-gist-id').value.trim();
+            if (newToken) { githubToken = newToken; localStorage.setItem(TOKEN_KEY, newToken); }
+            if (newGistId) { gistId = newGistId; localStorage.setItem(GIST_ID_KEY, newGistId); }
+            document.getElementById('settings-modal').classList.remove('active');
+            await loadData();
+        }
+        
+        // ========== 导出导入 ==========
+        function exportData() {
+            const data = JSON.stringify(allAssets, null, 2);
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `个人资产_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        async function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (Array.isArray(data)) {
+                        allAssets = data;
+                        await saveData();
+                        renderAssets();
+                        updateStats();
+                        alert('导入成功！');
+                    }
+                } catch (err) { alert('导入失败: ' + err.message); }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+        
+        // ========== 统计和渲染 ==========
+        function updateStats() {
+            let totalValue = 0, idleCount = 0, totalProfit = 0, expireCount = 0, highValueCount = 0, totalDailyCost = 0, activeCount = 0;
+            const today = new Date();
+            const expireThreshold = 30; // 30天内过期
+            
+            allAssets.forEach(a => {
+                if (a.status === 'sold') {
+                    totalProfit += (a.sell_price || 0) - (a.price || 0);
+                } else {
+                    totalValue += (a.price || 0) * (a.quantity || 1);
+                    if (a.status === 'idle') idleCount++;
+                    if (a.price >= 1000) highValueCount++;
+                    
+                    // 日均成本
+                    const buyDate = a.date || a.created_at?.split('T')[0];
+                    if (buyDate) {
+                        const days = Math.max(1, Math.floor((today - new Date(buyDate)) / 86400000));
+                        totalDailyCost += (a.price || 0) / days;
+                        activeCount++;
+                    }
+                    
+                    // 过期检查
+                    if (a.expire_date) {
+                        const expireDate = new Date(a.expire_date);
+                        const daysToExpire = Math.floor((expireDate - today) / 86400000);
+                        if (daysToExpire <= expireThreshold && daysToExpire >= 0) expireCount++;
+                    }
+                }
+            });
+            
+            document.getElementById('total-value').textContent = `¥${totalValue.toLocaleString()}`;
+            document.getElementById('total-count').textContent = allAssets.length;
+            document.getElementById('idle-count').textContent = idleCount;
+            document.getElementById('avg-daily-cost').textContent = activeCount > 0 ? `¥${(totalDailyCost / activeCount).toFixed(1)}` : '¥0';
+            document.getElementById('expire-count').textContent = expireCount;
+            document.getElementById('high-value-count').textContent = highValueCount;
+            
+            const profitEl = document.getElementById('total-profit');
+            const profitCard = document.getElementById('profit-card');
+            if (totalProfit >= 0) { profitCard.classList.remove('loss'); profitEl.textContent = `+¥${totalProfit.toLocaleString()}`; }
+            else { profitCard.classList.add('loss'); profitEl.textContent = `-¥${Math.abs(totalProfit).toLocaleString()}`; }
+        }
+        
+        function renderAssets() {
+            const today = new Date();
+            const expireThreshold = 30;
+            
+            let filtered = allAssets.filter(a => {
+                if (currentFilter === 'expiring') {
+                    if (a.status === 'sold' || !a.expire_date) return false;
+                    const daysToExpire = Math.floor((new Date(a.expire_date) - today) / 86400000);
+                    return daysToExpire <= expireThreshold && daysToExpire >= 0;
+                }
+                return currentFilter === 'all' || a.status === currentFilter;
+            });
+            
+            const list = document.getElementById('asset-list');
+            if (filtered.length === 0) { list.innerHTML = '<div class="empty-state"><div class="icon">📦</div>暂无资产<br>点击右下角+添加</div>'; return; }
+            
+            // 排序：即将过期的优先
+            filtered.sort((a, b) => {
+                if (a.expire_date && b.expire_date) {
+                    return new Date(a.expire_date) - new Date(b.expire_date);
+                }
+                if (a.expire_date) return -1;
+                if (b.expire_date) return 1;
+                return new Date(b.created_at) - new Date(a.created_at);
+            });
+            
+            list.innerHTML = filtered.map(asset => {
+                const buyDate = asset.date || asset.created_at?.split('T')[0] || '-';
+                const days = Math.max(1, Math.floor((today - new Date(buyDate)) / 86400000));
+                const dailyCost = days > 0 ? ((asset.price || 0) / days).toFixed(2) : (asset.price || 0);
+                const quantity = asset.quantity || 1;
+                
+                // 过期警告
+                let expireWarning = '';
+                let statusClass = `status-${asset.status || 'active'}`;
+                if (asset.expire_date && asset.status !== 'sold') {
+                    const daysToExpire = Math.floor((new Date(asset.expire_date) - today) / 86400000);
+                    if (daysToExpire <= 0) {
+                        expireWarning = `<div class="expire-warning" style="background:#fee2e2;border-color:#dc2626;">⚠️ 已过期 ${Math.abs(daysToExpire)} 天</div>`;
+                        statusClass = 'status-expired';
+                    } else if (daysToExpire <= expireThreshold) {
+                        expireWarning = `<div class="expire-warning">⏰ 还有 ${daysToExpire} 天过期</div>`;
+                    }
+                }
+                
+                // 标签
+                const tags = asset.tags ? asset.tags.split(',').map(t => `<span class="tag">${t.trim()}</span>`).join('') : '';
+                
+                const profitHtml = asset.status === 'sold' && asset.sell_price
+                    ? `<div class="cost-item"><span class="cost-label">盈亏</span><div class="cost-value ${asset.sell_price >= asset.price ? 'profit' : 'loss'}">${asset.sell_price >= asset.price ? '+' : ''}¥${(asset.sell_price - asset.price).toLocaleString()}</div></div>`
+                    : `<div class="cost-item"><span class="cost-label">日均成本</span><div class="cost-value">¥${dailyCost}</div></div>`;
+                
+                const sellInfoHtml = asset.status === 'sold' 
+                    ? `<div class="cost-item"><span class="cost-label">卖出价格</span><div class="cost-value">¥${Number(asset.sell_price).toLocaleString()}</div></div>
+                       ${asset.sell_buyer ? `<div class="cost-item"><span class="cost-label">买家</span><div class="cost-value">${asset.sell_buyer}</div></div>` : ''}`
+                    : '';
+                
+                const quantityHtml = quantity > 1 ? `<div class="cost-item"><span class="cost-label">数量</span><div class="cost-value">${quantity}</div></div>` : '';
+                const expireHtml = asset.expire_date && asset.status !== 'sold' 
+                    ? `<div class="cost-item"><span class="cost-label">过期日期</span><div class="cost-value">${asset.expire_date}</div></div>` : '';
+                
+                return `<div class="asset-card">
+                    <div class="asset-header">
+                        <div>
+                            <div class="asset-name">${asset.name}</div>
+                            <div class="asset-meta"><span>${buyDate}</span><span>${days}天</span>${tags}</div>
+                        </div>
+                        <div style="text-align:right">
+                            <span class="asset-status ${statusClass}">${asset.status==='active'?'使用中':asset.status==='idle'?'闲置':asset.status==='sold'?'已卖出':'已过期'}</span>
+                            <div style="margin-top:4px;font-size:11px;color:#86868b">${asset.category||'其他'}</div>
+                        </div>
+                    </div>
+                    <div class="asset-price">¥${Number(asset.price).toLocaleString()}${quantity > 1 ? ` × ${quantity}` : ''}</div>
+                    ${expireWarning}
+                    <div class="asset-cost">${profitHtml}${quantityHtml}${expireHtml}${sellInfoHtml}</div>
+                    <div class="asset-actions">
+                        ${asset.status !== 'sold' ? `
+                            <button class="btn btn-sell" onclick="openSellModal('${asset.id}')">卖出</button>
+                            ${asset.status === 'idle' ? `<button class="btn btn-active" onclick="markStatus('${asset.id}', 'active')">启用</button>` : `<button class="btn btn-idle" onclick="markStatus('${asset.id}', 'idle')">闲置</button>`}
+                        ` : ''}
+                        <button class="btn btn-edit" onclick="editAsset('${asset.id}')">编辑</button>
+                        <button class="btn btn-delete" onclick="deleteAsset('${asset.id}')">删除</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+        
+        // ========== 事件处理 ==========
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentFilter = tab.dataset.filter;
+                renderAssets();
+            });
+        });
+        
+        document.getElementById('add-btn').addEventListener('click', () => {
+            document.getElementById('modal-title').textContent = '添加资产';
+            document.getElementById('asset-form').reset();
+            document.getElementById('asset-id').value = '';
+            document.getElementById('asset-date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('asset-quantity').value = 1;
+            document.getElementById('add-modal').classList.add('active');
+        });
+        
+        document.getElementById('close-modal').addEventListener('click', () => document.getElementById('add-modal').classList.remove('active'));
+        document.getElementById('close-sell-modal').addEventListener('click', () => document.getElementById('sell-modal').classList.remove('active'));
+        document.querySelectorAll('.modal').forEach(modal => { modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('active'); }); });
+        
+        document.getElementById('asset-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('asset-id').value;
+            const now = new Date().toISOString();
+            let asset;
+            
+            const formData = {
+                name: document.getElementById('asset-name').value,
+                price: parseFloat(document.getElementById('asset-price').value),
+                date: document.getElementById('asset-date').value,
+                category: document.getElementById('asset-category').value,
+                status: document.getElementById('asset-status').value,
+                expire_date: document.getElementById('asset-expire').value || null,
+                quantity: parseInt(document.getElementById('asset-quantity').value) || 1,
+                tags: document.getElementById('asset-tags').value,
+                note: document.getElementById('asset-note').value
+            };
+            
+            if (id) {
+                const idx = allAssets.findIndex(a => a.id === id);
+                if (idx !== -1) {
+                    asset = { ...allAssets[idx], ...formData, updated_at: now };
+                    allAssets[idx] = asset;
+                }
+            } else {
+                asset = { 
+                    id: Date.now().toString(), 
+                    ...formData,
+                    sell_price: null, 
+                    sell_date: null, 
+                    sell_buyer: null,
+                    created_at: now, 
+                    updated_at: now 
+                };
+                allAssets.push(asset);
+            }
+            
+            await saveData();
+            renderAssets();
+            updateStats();
+            document.getElementById('add-modal').classList.remove('active');
+        });
+        
+        function editAsset(id) {
+            const asset = allAssets.find(a => a.id === id);
+            if (!asset) return;
+            document.getElementById('modal-title').textContent = '编辑资产';
+            document.getElementById('asset-id').value = asset.id;
+            document.getElementById('asset-name').value = asset.name;
+            document.getElementById('asset-price').value = asset.price;
+            document.getElementById('asset-date').value = asset.date || '';
+            document.getElementById('asset-category').value = asset.category || '其他';
+            document.getElementById('asset-status').value = asset.status || 'active';
+            document.getElementById('asset-expire').value = asset.expire_date || '';
+            document.getElementById('asset-quantity').value = asset.quantity || 1;
+            document.getElementById('asset-tags').value = asset.tags || '';
+            document.getElementById('asset-note').value = asset.note || '';
+            document.getElementById('add-modal').classList.add('active');
+        }
+        
+        async function deleteAsset(id) {
+            if (!confirm('确定要删除吗？')) return;
+            allAssets = allAssets.filter(a => a.id !== id);
+            await saveData();
+            renderAssets();
+            updateStats();
+        }
+        
+        function openSellModal(id) {
+            document.getElementById('sell-asset-id').value = id;
+            document.getElementById('sell-price').value = '';
+            document.getElementById('sell-date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('sell-buyer').value = '';
+            document.getElementById('sell-modal').classList.add('active');
+        }
+        
+        document.getElementById('sell-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('sell-asset-id').value;
+            const idx = allAssets.findIndex(a => a.id === id);
+            if (idx !== -1) {
+                allAssets[idx].status = 'sold';
+                allAssets[idx].sell_price = parseFloat(document.getElementById('sell-price').value);
+                allAssets[idx].sell_date = document.getElementById('sell-date').value;
+                allAssets[idx].sell_buyer = document.getElementById('sell-buyer').value || null;
+                allAssets[idx].updated_at = new Date().toISOString();
+                await saveData();
+            }
+            renderAssets();
+            updateStats();
+            document.getElementById('sell-modal').classList.remove('active');
+        });
+        
+        async function markStatus(id, status) {
+            const idx = allAssets.findIndex(a => a.id === id);
+            if (idx !== -1) {
+                allAssets[idx].status = status;
+                allAssets[idx].updated_at = new Date().toISOString();
+                await saveData();
+            }
+            renderAssets();
+            updateStats();
+        }
+        
+        // ========== 初始化 ==========
+        loadData();
+        
+        document.addEventListener('visibilitychange', () => { if (!document.hidden) loadData(); });
+        window.addEventListener('focus', () => loadData();
+        
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/asset-tracker/sw.js').then(reg => reg.update()).catch(() => {});
+        }
+    </script>
+</body>
+</html>

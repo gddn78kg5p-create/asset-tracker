@@ -1,0 +1,17 @@
+{
+  "name": "个人资产追踪",
+  "short_name": "资产追踪",
+  "description": "记录个人资产、计算日均成本、追踪闲置流转",
+  "start_url": "/asset-tracker/",
+  "display": "standalone",
+  "background_color": "#f5f5f7",
+  "theme_color": "#667eea",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23667eea' width='100' height='100' rx='20'/><text x='50' y='65' font-size='50' text-anchor='middle' fill='white'>💰</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    }
+  ]
+}
