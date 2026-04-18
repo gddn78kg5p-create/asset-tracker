@@ -11,129 +11,122 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f7; color: #1d1d1f; min-height: 100vh; padding-bottom: 80px; font-size: 16px; }
-        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px 16px; }
-        .header h1 { font-size: 22px; margin-bottom: 16px; }
-        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-        .stat-card { background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border-radius: 12px; padding: 14px 10px; text-align: center; }
-        .stat-card .label { font-size: 12px; opacity: 0.9; }
-        .stat-card .value { font-size: 22px; font-weight: 700; margin-top: 4px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 18px 14px; }
+        .header h1 { font-size: 22px; margin-bottom: 14px; }
+        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .stat-card { background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border-radius: 10px; padding: 12px 6px; text-align: center; }
+        .stat-card .label { font-size: 11px; opacity: 0.9; }
+        .stat-card .value { font-size: 20px; font-weight: 700; margin-top: 2px; }
         .stat-card.profit .value { color: #4ade80; }
         .stat-card.profit.loss .value { color: #f87171; }
-        .content { padding: 12px 8px; }
+        .content { padding: 10px 8px; }
         
-        /* 分析卡片 */
-        .section { background: white; border-radius: 14px; padding: 14px; margin-bottom: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
-        .section h3 { font-size: 15px; color: #666; margin-bottom: 12px; }
-        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-        .grid-item { text-align: center; padding: 10px 6px; background: #f9fafb; border-radius: 10px; }
-        .grid-item .val { font-size: 20px; font-weight: 700; color: #667eea; }
-        .grid-item .lbl { font-size: 11px; color: #86868b; margin-top: 2px; }
+        /* 板块通用 */
+        .section { background: white; border-radius: 12px; padding: 12px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .section h3 { font-size: 14px; color: #666; margin-bottom: 10px; }
+        
+        /* 总体概览 + 折旧 */
+        .grid-6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+        .grid-item { text-align: center; padding: 8px 4px; background: #f9fafb; border-radius: 8px; }
+        .grid-item .val { font-size: 18px; font-weight: 700; color: #667eea; }
+        .grid-item .lbl { font-size: 10px; color: #86868b; margin-top: 2px; }
         .grid-item.profit .val { color: #16a34a; }
         .grid-item.loss .val { color: #dc2626; }
         
-        /* 折旧 - 当前价值 */
-        .dep-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0f0f5; }
+        /* 折旧列表 */
+        .dep-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f0f0f5; font-size: 14px; }
         .dep-item:last-child { border-bottom: none; }
-        .dep-name { font-size: 15px; font-weight: 500; }
-        .dep-values { display: flex; gap: 16px; align-items: center; }
-        .dep-original { font-size: 13px; color: #86868b; text-decoration: line-through; }
-        .dep-current { font-size: 18px; font-weight: 700; color: #667eea; }
-        .dep-down { font-size: 12px; color: #dc2626; background: #fee2e2; padding: 2px 6px; border-radius: 4px; }
+        .dep-name { font-size: 14px; flex: 1; }
+        .dep-values { display: flex; gap: 10px; align-items: center; }
+        .dep-original { font-size: 12px; color: #999; text-decoration: line-through; }
+        .dep-current { font-size: 16px; font-weight: 700; color: #667eea; }
+        .dep-down { font-size: 11px; color: #dc2626; background: #fee2e2; padding: 2px 5px; border-radius: 4px; }
         
-        /* 分类 */
-        .cat-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f0f0f5; font-size: 15px; }
-        .cat-row:last-child { border-bottom: none; }
-        .cat-dot { width: 10px; height: 10px; border-radius: 3px; margin-right: 8px; display: inline-block; }
-        .cat-stats { display: flex; gap: 12px; color: #86868b; font-size: 14px; }
+        /* 分类合并板块 */
+        .cat-flex { display: flex; gap: 10px; align-items: flex-start; }
+        .pie-small { width: 70px; height: 70px; border-radius: 50%; flex-shrink: 0; }
+        .cat-list { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+        .cat-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; font-size: 13px; }
+        .cat-dot { width: 8px; height: 8px; border-radius: 2px; margin-right: 6px; display: inline-block; }
+        .cat-stats { color: #86868b; font-size: 12px; }
         .cat-stats .profit { color: #16a34a; }
         .cat-stats .loss { color: #dc2626; }
         
-        /* 月度 */
-        .month-row { position: relative; padding: 6px 0; display: flex; justify-content: space-between; font-size: 14px; }
-        .month-bar { position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(90deg, rgba(102,126,234,0.15) 0%, rgba(118,75,162,0.08) 100%); border-radius: 4px; }
+        /* 月度趋势 */
+        .month-row { position: relative; padding: 5px 0; display: flex; justify-content: space-between; font-size: 13px; }
+        .month-bar { position: absolute; left: 0; top: 0; bottom: 0; background: rgba(102,126,234,0.1); border-radius: 4px; }
         
-        /* 饼图 */
-        .pie-wrap { display: flex; align-items: center; gap: 12px; }
-        .pie-chart { width: 80px; height: 80px; border-radius: 50%; flex-shrink: 0; }
-        .pie-legend { display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
-        .pie-item { display: flex; align-items: center; gap: 6px; }
-        .pie-dot { width: 10px; height: 10px; border-radius: 3px; }
+        /* 搜索 */
+        .search-bar { display: flex; gap: 6px; margin-bottom: 8px; }
+        .search-bar input { flex: 1; padding: 10px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 15px; }
+        .search-bar select { padding: 10px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 13px; background: white; }
         
-        /* 建议 */
-        .suggest { padding: 10px 12px; background: #f9fafb; border-radius: 8px; font-size: 14px; margin-bottom: 6px; }
-        
-        .tabs { display: flex; background: white; border-radius: 10px; padding: 3px; margin-bottom: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
-        .tab { flex: 1; padding: 10px 6px; text-align: center; font-size: 14px; cursor: pointer; border-radius: 8px; }
+        .tabs { display: flex; background: white; border-radius: 8px; padding: 3px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .tab { flex: 1; padding: 8px 4px; text-align: center; font-size: 13px; cursor: pointer; border-radius: 6px; }
         .tab.active { background: #667eea; color: white; }
-        .search-bar { display: flex; gap: 6px; margin-bottom: 10px; }
-        .search-bar input { flex: 1; padding: 12px; border: 1px solid #e0e0e0; border-radius: 10px; font-size: 16px; }
-        .search-bar select { padding: 12px; border: 1px solid #e0e0e0; border-radius: 10px; font-size: 14px; background: white; }
-        .batch-bar { display: none; background: #fef3c7; padding: 10px; border-radius: 10px; margin-bottom: 10px; align-items: center; justify-content: space-between; }
+        
+        .batch-bar { display: none; background: #fef3c7; padding: 8px 10px; border-radius: 8px; margin-bottom: 8px; align-items: center; justify-content: space-between; font-size: 13px; }
         .batch-bar.active { display: flex; }
-        .batch-btn { padding: 6px 12px; border-radius: 6px; font-size: 13px; border: none; cursor: pointer; margin-left: 8px; }
+        .batch-btn { padding: 5px 10px; border-radius: 5px; font-size: 12px; border: none; cursor: pointer; margin-left: 6px; }
         .batch-btn.sell { background: #667eea; color: white; }
         .batch-btn.idle { background: #fef3c7; color: #d97706; }
         .batch-btn.delete { background: #fee2e2; color: #dc2626; }
-        .asset-list { display: flex; flex-direction: column; gap: 10px; }
-        .asset-card { background: white; border-radius: 14px; padding: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+        
+        /* 物品列表 - 一行三个 */
+        .asset-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .asset-card { background: white; border-radius: 12px; padding: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         .asset-card.selected { border: 2px solid #667eea; }
-        .asset-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px; }
-        .asset-name { font-size: 17px; font-weight: 600; }
-        .asset-status { font-size: 12px; padding: 3px 8px; border-radius: 4px; font-weight: 500; }
+        .asset-name { font-size: 14px; font-weight: 600; margin-bottom: 4px; line-height: 1.3; }
+        .asset-price { font-size: 18px; font-weight: 700; color: #667eea; margin: 4px 0; }
+        .asset-meta { font-size: 11px; color: #86868b; }
+        .asset-status { font-size: 10px; padding: 2px 5px; border-radius: 3px; font-weight: 500; margin-left: 4px; }
         .status-active { background: #dcfce7; color: #16a34a; }
         .status-idle { background: #fef3c7; color: #d97706; }
         .status-sold { background: #e0e7ff; color: #4f46e5; }
-        .status-expired { background: #fee2e2; color: #dc2626; }
-        .asset-price { font-size: 24px; font-weight: 700; color: #667eea; }
-        .asset-meta { display: flex; gap: 14px; margin-top: 6px; font-size: 13px; color: #86868b; }
-        .asset-cost { margin-top: 10px; padding-top: 10px; border-top: 1px solid #f0f0f5; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; font-size: 13px; }
-        .cost-item .cost-label { color: #86868b; font-size: 11px; }
-        .cost-item .cost-value { font-weight: 600; margin-top: 2px; font-size: 14px; }
-        .profit { color: #16a34a; }
-        .loss { color: #dc2626; }
-        .asset-actions { display: flex; gap: 8px; margin-top: 12px; }
-        .btn { padding: 8px 14px; border-radius: 8px; font-size: 14px; border: none; cursor: pointer; }
-        .btn-sell { background: #667eea; color: white; }
-        .btn-idle { background: #fef3c7; color: #d97706; }
-        .btn-edit { background: #f0f0f5; color: #666; }
-        .btn-delete { background: #fee2e2; color: #dc2626; }
-        .fab { position: fixed; bottom: 24px; right: 16px; width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-size: 28px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); cursor: pointer; border: none; z-index: 100; }
-        .fab-menu { position: fixed; bottom: 90px; right: 16px; display: none; flex-direction: column; gap: 10px; z-index: 99; }
+        .asset-card .asset-actions { display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
+        .asset-card .btn { padding: 4px 8px; border-radius: 5px; font-size: 10px; border: none; cursor: pointer; }
+        .asset-card .btn-sell { background: #667eea; color: white; }
+        .asset-card .btn-idle { background: #fef3c7; color: #d97706; }
+        .asset-card .btn-edit { background: #f0f0f5; color: #666; }
+        .asset-card .btn-delete { background: #fee2e2; color: #dc2626; }
+        .asset-card .checkbox { width: 16px; height: 16px; }
+        .expire-warn { background: #fef3c7; font-size: 10px; padding: 2px 5px; border-radius: 3px; color: #d97706; margin-left: 4px; }
+        
+        .fab { position: fixed; bottom: 20px; right: 14px; width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-size: 26px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); cursor: pointer; border: none; z-index: 100; }
+        .fab-menu { position: fixed; bottom: 82px; right: 14px; display: none; flex-direction: column; gap: 8px; z-index: 99; }
         .fab-menu.active { display: flex; }
-        .fab-item { padding: 12px 18px; background: white; border-radius: 20px; font-size: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); cursor: pointer; }
-        .sync-bar { position: fixed; top: 10px; right: 10px; display: flex; gap: 8px; z-index: 100; }
-        .sync-btn { padding: 8px 12px; background: white; border: none; border-radius: 8px; font-size: 13px; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
-        .sync-status { padding: 8px 12px; background: white; border-radius: 8px; font-size: 12px; color: #86868b; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+        .fab-item { padding: 10px 16px; background: white; border-radius: 18px; font-size: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); cursor: pointer; }
+        .sync-bar { position: fixed; top: 8px; right: 8px; display: flex; gap: 6px; z-index: 100; }
+        .sync-btn { padding: 6px 10px; background: white; border: none; border-radius: 6px; font-size: 12px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .sync-status { padding: 6px 10px; background: white; border-radius: 6px; font-size: 11px; color: #86868b; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
         .modal.active { display: flex; }
-        .modal-content { background: white; border-radius: 16px; padding: 20px; width: 100%; max-width: 400px; max-height: 90vh; overflow-y: auto; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-        .modal-header h2 { font-size: 18px; }
-        .modal-close { width: 32px; height: 32px; border-radius: 50%; background: #f0f0f5; border: none; font-size: 18px; cursor: pointer; }
-        .form-group { margin-bottom: 14px; }
-        .form-group label { display: block; font-size: 14px; color: #86868b; margin-bottom: 6px; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 10px; font-size: 16px; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .btn-submit { width: 100%; padding: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; }
-        .empty-state { text-align: center; padding: 40px 20px; color: #86868b; font-size: 16px; }
-        .checkbox { width: 22px; height: 22px; cursor: pointer; accent-color: #667eea; }
-        .tag { display: inline-block; background: #e0e7ff; color: #4f46e5; font-size: 11px; padding: 2px 6px; border-radius: 4px; margin-right: 4px; }
-        .expire-warning { background: #fef3c7; border-left: 3px solid #f59e0b; padding: 8px 10px; margin-top: 8px; font-size: 13px; border-radius: 0 8px 8px 0; }
-        #scanner-container { width: 100%; margin-bottom: 12px; }
-        .camera-preview { width: 100%; border-radius: 12px; margin-bottom: 12px; }
-        .export-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
-        .export-btn { padding: 12px; background: #f9fafb; border: 1px solid #e0e0e0; border-radius: 10px; text-align: center; cursor: pointer; font-size: 14px; }
+        .modal-content { background: white; border-radius: 14px; padding: 18px; width: 100%; max-width: 380px; max-height: 90vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+        .modal-header h2 { font-size: 17px; }
+        .modal-close { width: 30px; height: 30px; border-radius: 50%; background: #f0f0f5; border: none; font-size: 16px; cursor: pointer; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 13px; color: #86868b; margin-bottom: 4px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 15px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .btn-submit { width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
+        .empty-state { text-align: center; padding: 30px; color: #86868b; font-size: 14px; grid-column: 1 / -1; }
+        #scanner-container { width: 100%; margin-bottom: 10px; }
+        .camera-preview { width: 100%; border-radius: 10px; margin-bottom: 10px; }
+        .export-options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+        .export-btn { padding: 10px; background: #f9fafb; border: 1px solid #e0e0e0; border-radius: 8px; text-align: center; cursor: pointer; font-size: 13px; }
+        .tag { display: inline-block; background: #e0e7ff; color: #4f46e5; font-size: 9px; padding: 1px 4px; border-radius: 3px; margin-right: 2px; }
     </style>
 </head>
 <body>
     <div class="sync-bar">
-        <div class="sync-status" id="sync-status">🔄 加载中...</div>
+        <div class="sync-status" id="sync-status">🔄</div>
         <button class="sync-btn" onclick="openSettingsModal()">⚙️</button>
         <button class="sync-btn" onclick="showExportModal()">📤</button>
     </div>
     
     <div class="header">
-        <h1>💰 个人资产追踪 Pro</h1>
+        <h1>💰 个人资产追踪</h1>
         <div class="stats">
             <div class="stat-card"><div class="label">总资产</div><div class="value" id="total-value">¥0</div></div>
             <div class="stat-card"><div class="label">数量</div><div class="value" id="total-count">0</div></div>
@@ -143,63 +136,49 @@
     </div>
     
     <div class="content">
-        <!-- 总体概览 -->
+        <!-- 总体概览 + 折旧 -->
         <div class="section">
-            <h3>📈 总体概览</h3>
-            <div class="grid-3">
+            <h3>📊 总体概览</h3>
+            <div class="grid-6">
                 <div class="grid-item"><div class="val" id="active-count">0</div><div class="lbl">使用中</div></div>
                 <div class="grid-item"><div class="val" id="sold-count">0</div><div class="lbl">已卖出</div></div>
                 <div class="grid-item"><div class="val" id="avg-daily">¥0</div><div class="lbl">日均成本</div></div>
-                <div class="grid-item"><div class="val" id="expire-count">0</div><div class="lbl">即将过期</div></div>
+                <div class="grid-item"><div class="val" id="expire-count">0</div><div class="lbl">过期</div></div>
                 <div class="grid-item"><div class="val" id="high-value">0</div><div class="lbl">高价值</div></div>
                 <div class="grid-item" id="profit-item"><div class="val" id="profit-value">¥0</div><div class="lbl">卖出盈亏</div></div>
             </div>
+            <div id="dep-list" style="margin-top:10px"></div>
         </div>
         
-        <!-- 折旧分析 - 当前价值 -->
-        <div class="section" id="dep-section" style="display:none">
-            <h3>📉 资产当前价值（按5年折旧计算）</h3>
-            <div id="dep-list"></div>
-        </div>
-        
-        <!-- 分类占比 -->
-        <div class="section" id="pie-section" style="display:none">
-            <h3>🥧 分类占比</h3>
-            <div class="pie-wrap" id="pie-wrap"></div>
-        </div>
-        
-        <!-- 分类统计 -->
+        <!-- 分类统计 + 占比 -->
         <div class="section" id="cat-section" style="display:none">
-            <h3>📁 分类统计</h3>
-            <div id="cat-list"></div>
+            <h3>📁 分类</h3>
+            <div class="cat-flex">
+                <div class="pie-small" id="pie-small"></div>
+                <div class="cat-list" id="cat-list"></div>
+            </div>
         </div>
         
         <!-- 月度趋势 -->
         <div class="section" id="month-section" style="display:none">
-            <h3>📊 月度购买趋势</h3>
+            <h3>📈 月度趋势</h3>
             <div id="month-list"></div>
-        </div>
-        
-        <!-- 智能建议 -->
-        <div class="section" id="suggest-section" style="display:none">
-            <h3>💡 智能建议</h3>
-            <div id="suggest-list"></div>
         </div>
         
         <!-- 搜索 -->
         <div class="search-bar">
-            <input type="text" id="search-input" placeholder="🔍 搜索..." oninput="handleSearch()">
+            <input type="text" id="search-input" placeholder="搜索..." oninput="handleSearch()">
             <select id="filter-category" onchange="handleSearch()">
                 <option value="">全部</option>
-                <option value="数码">📱 数码</option>
-                <option value="电脑">💻 电脑</option>
-                <option value="家电">🎮 家电</option>
-                <option value="奢侈品">👜 奢侈品</option>
-                <option value="收藏">🎨 收藏</option>
-                <option value="日用品">🧴 日用品</option>
-                <option value="食品">🍎 食品</option>
-                <option value="金融">📈 金融</option>
-                <option value="其他">📦 其他</option>
+                <option value="数码">📱</option>
+                <option value="电脑">💻</option>
+                <option value="家电">🎮</option>
+                <option value="奢侈品">👜</option>
+                <option value="收藏">🎨</option>
+                <option value="日用品">🧴</option>
+                <option value="食品">🍎</option>
+                <option value="金融">📈</option>
+                <option value="其他">📦</option>
             </select>
         </div>
         
@@ -209,7 +188,6 @@
             <div>
                 <button class="batch-btn sell" onclick="batchSetStatus('sold')">卖出</button>
                 <button class="batch-btn idle" onclick="batchSetStatus('idle')">闲置</button>
-                <button class="batch-btn idle" onclick="batchSetStatus('active')">启用</button>
                 <button class="batch-btn delete" onclick="batchDelete()">删除</button>
             </div>
         </div>
@@ -219,20 +197,19 @@
             <div class="tab" data-filter="active">使用中</div>
             <div class="tab" data-filter="idle">闲置</div>
             <div class="tab" data-filter="sold">已卖出</div>
-            <div class="tab" data-filter="expiring">过期</div>
         </div>
         
-        <div class="asset-list" id="asset-list"><div class="empty-state">加载中...</div></div>
+        <div class="asset-grid" id="asset-list"><div class="empty-state">暂无资产</div></div>
     </div>
     
     <button class="fab" onclick="toggleFabMenu()">+</button>
     <div class="fab-menu" id="fab-menu">
-        <div class="fab-item" onclick="openAddModal()">➕ 手动添加</div>
+        <div class="fab-item" onclick="openAddModal()">➕ 手动</div>
         <div class="fab-item" onclick="openScanModal()">📷 扫码</div>
         <div class="fab-item" onclick="openPhotoModal()">📸 拍照</div>
     </div>
     
-    <!-- 设置弹窗 -->
+    <!-- 设置 -->
     <div class="modal" id="settings-modal">
         <div class="modal-content">
             <div class="modal-header"><h2>⚙️ 设置</h2><button class="modal-close" onclick="closeModal('settings-modal')">×</button></div>
@@ -242,19 +219,18 @@
         </div>
     </div>
     
-    <!-- 导出弹窗 -->
+    <!-- 导出 -->
     <div class="modal" id="export-modal">
         <div class="modal-content">
             <div class="modal-header"><h2>📤 导出</h2><button class="modal-close" onclick="closeModal('export-modal')">×</button></div>
             <div class="export-options">
-                <div class="export-btn" onclick="exportData('json')">📄 JSON</div>
-                <div class="export-btn" onclick="exportData('csv')">📊 CSV</div>
-                <div class="export-btn" onclick="exportData('report')">📝 报告</div>
+                <div class="export-btn" onclick="exportData('json')">JSON</div>
+                <div class="export-btn" onclick="exportData('csv')">CSV</div>
             </div>
         </div>
     </div>
     
-    <!-- 添加弹窗 -->
+    <!-- 添加/编辑 -->
     <div class="modal" id="add-modal">
         <div class="modal-content">
             <div class="modal-header"><h2 id="modal-title">添加资产</h2><button class="modal-close" onclick="closeModal('add-modal')">×</button></div>
@@ -288,35 +264,34 @@
                     <div class="form-group"><label>数量</label><input type="number" id="asset-quantity" value="1" min="1"></div>
                 </div>
                 <div class="form-row">
+                    <div class="form-group"><label>折旧年限</label><input type="number" id="asset-dep-years" value="5" min="1" max="30"></div>
                     <div class="form-group"><label>位置</label><input type="text" id="asset-location"></div>
-                    <div class="form-group"><label>保修</label><input type="date" id="asset-warranty"></div>
                 </div>
                 <div class="form-group"><label>条码</label><input type="text" id="asset-barcode"></div>
                 <div class="form-group"><label>标签</label><input type="text" id="asset-tags"></div>
-                <div class="form-group"><label>备注</label><textarea id="asset-note" rows="2"></textarea></div>
                 <button type="submit" class="btn-submit">保存</button>
             </form>
         </div>
     </div>
     
-    <!-- 扫码弹窗 -->
+    <!-- 扫码 -->
     <div class="modal" id="scan-modal">
         <div class="modal-content">
             <div class="modal-header"><h2>📷 扫码</h2><button class="modal-close" onclick="closeScanModal()">×</button></div>
             <div id="scanner-container"></div>
-            <div id="scan-result" style="display:none;background:#f0f0f5;padding:12px;border-radius:10px;font-size:15px;margin-bottom:12px"></div>
+            <div id="scan-result" style="display:none;background:#f0f0f5;padding:10px;border-radius:8px;font-size:14px;margin-bottom:10px"></div>
             <button class="btn-submit" id="use-scan-btn" style="display:none" onclick="useScanResult()">使用此条码</button>
         </div>
     </div>
     
-    <!-- 拍照弹窗 -->
+    <!-- 拍照 -->
     <div class="modal" id="photo-modal">
         <div class="modal-content">
             <div class="modal-header"><h2>📸 拍照</h2><button class="modal-close" onclick="closePhotoModal()">×</button></div>
             <video id="camera-preview" class="camera-preview" autoplay playsinline style="display:none"></video>
             <canvas id="photo-canvas" style="display:none"></canvas>
             <img id="captured-photo" class="camera-preview" style="display:none">
-            <div style="display:flex;gap:10px;margin-bottom:12px">
+            <div style="display:flex;gap:8px;margin-bottom:10px">
                 <button class="btn btn-sell" id="capture-btn" onclick="capturePhoto()" style="flex:1">📸 拍照</button>
                 <button class="btn btn-edit" id="retake-btn" style="display:none;flex:1" onclick="retakePhoto()">重拍</button>
             </div>
@@ -328,7 +303,7 @@
         </div>
     </div>
     
-    <!-- 卖出弹窗 -->
+    <!-- 卖出 -->
     <div class="modal" id="sell-modal">
         <div class="modal-content">
             <div class="modal-header"><h2>卖出</h2><button class="modal-close" onclick="closeModal('sell-modal')">×</button></div>
@@ -336,7 +311,6 @@
                 <input type="hidden" id="sell-asset-id">
                 <div class="form-group"><label>卖出价格</label><input type="number" id="sell-price" required min="0"></div>
                 <div class="form-group"><label>日期</label><input type="date" id="sell-date"></div>
-                <div class="form-group"><label>买家</label><input type="text" id="sell-buyer"></div>
                 <button type="submit" class="btn-submit">确认</button>
             </form>
         </div>
@@ -354,7 +328,7 @@
         
         const colorMap = {'数码':'#667eea','电脑':'#764ba2','家电':'#f59e0b','奢侈品':'#ec4899','收藏':'#8b5cf6','日用品':'#10b981','食品':'#ef4444','金融':'#3b82f6','其他':'#6b7280'};
         
-        function updateSyncStatus(s) { document.getElementById('sync-status').textContent = s === 'syncing' ? '🔄 同步中' : s === 'synced' ? '☁️ 已同步' : s === 'error' ? '⚠️ 失败' : s === 'offline' ? '📱 本地' : '🔄 加载中'; }
+        function updateSyncStatus(s) { document.getElementById('sync-status').textContent = s === 'syncing' ? '🔄' : s === 'synced' ? '☁️' : s === 'error' ? '⚠️' : '📱'; }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
         
         async function loadData() {
@@ -400,20 +374,15 @@
                         const days = Math.max(1, Math.floor((today - new Date(buyDate)) / 86400000));
                         totalDailyCost += (a.price || 0) / days;
                         
-                        // 折旧计算 - 只显示有意义的（购买超过30天且价值>100）
+                        // 折旧 - 使用自定义年限，默认5年
+                        const depYears = a.dep_years || 5;
                         if (days > 30 && a.price > 100) {
                             const original = a.price || 0;
-                            const depreciationRate = Math.min(1, days / (5 * 365)); // 5年折旧
+                            const depreciationRate = Math.min(1, days / (depYears * 365));
                             const currentValue = Math.round(original * (1 - depreciationRate));
                             const lossAmount = original - currentValue;
-                            if (lossAmount > 10) { // 只显示折旧超过10元的
-                                depreciationList.push({ 
-                                    name: a.name, 
-                                    original, 
-                                    current: currentValue, 
-                                    loss: lossAmount,
-                                    percent: Math.round(depreciationRate * 100)
-                                });
+                            if (lossAmount > 10) {
+                                depreciationList.push({ name: a.name, original, current: currentValue, loss: lossAmount, percent: Math.round(depreciationRate * 100), depYears });
                             }
                         }
                     }
@@ -425,7 +394,7 @@
                 if (month) { if (!monthlyStats[month]) monthlyStats[month] = { count: 0, value: 0 }; monthlyStats[month].count++; monthlyStats[month].value += (a.price || 0); }
             });
             
-            // 更新统计
+            // 更新顶部统计
             document.getElementById('total-value').textContent = `¥${totalValue.toLocaleString()}`;
             document.getElementById('total-count').textContent = allAssets.length;
             document.getElementById('idle-count').textContent = idleCount;
@@ -444,11 +413,10 @@
             document.getElementById('total-profit').textContent = totalProfit >= 0 ? `+¥${totalProfit.toLocaleString()}` : `-¥${Math.abs(totalProfit).toLocaleString()}`;
             if (totalProfit < 0) profitCard.classList.add('loss'); else profitCard.classList.remove('loss');
             
-            // 折旧 - 当前价值（按损失金额排序，损失最大的在前）
+            // 折旧列表
             if (depreciationList.length > 0) {
-                document.getElementById('dep-section').style.display = 'block';
                 depreciationList.sort((a, b) => b.loss - a.loss);
-                document.getElementById('dep-list').innerHTML = depreciationList.slice(0, 6).map(d => `
+                document.getElementById('dep-list').innerHTML = depreciationList.slice(0, 5).map(d => `
                     <div class="dep-item">
                         <div class="dep-name">${d.name}</div>
                         <div class="dep-values">
@@ -458,26 +426,20 @@
                         </div>
                     </div>
                 `).join('');
-            } else { document.getElementById('dep-section').style.display = 'none'; }
+            } else { document.getElementById('dep-list').innerHTML = ''; }
             
-            // 饼图
+            // 分类饼图 + 列表
             const sortedCats = Object.entries(categoryStats).sort((a, b) => b[1].value - a[1].value);
             const pieData = sortedCats.filter(([_, s]) => s.value > 0);
             if (pieData.length > 0) {
-                document.getElementById('pie-section').style.display = 'block';
-                const gradient = pieData.map(([cat, s]) => `${s.color} ${Math.round((s.value / totalValue) * 100)}%`).join(', ');
-                document.getElementById('pie-wrap').innerHTML = `<div class="pie-chart" style="background:conic-gradient(${gradient})"></div><div class="pie-legend">${pieData.slice(0, 4).map(([cat, s]) => `<div class="pie-item"><div class="pie-dot" style="background:${s.color}"></div>${cat} ¥${s.value.toLocaleString()}</div>`).join('')}</div>`;
-            } else { document.getElementById('pie-section').style.display = 'none'; }
-            
-            // 分类统计
-            if (sortedCats.length > 0) {
                 document.getElementById('cat-section').style.display = 'block';
-                document.getElementById('cat-list').innerHTML = sortedCats.map(([cat, s]) => `
+                const gradient = pieData.map(([cat, s]) => `${s.color} ${Math.round((s.value / totalValue) * 100)}%`).join(', ');
+                document.getElementById('pie-small').style.background = `conic-gradient(${gradient})`;
+                document.getElementById('cat-list').innerHTML = pieData.map(([cat, s]) => `
                     <div class="cat-row">
                         <div><span class="cat-dot" style="background:${s.color}"></span>${cat}</div>
                         <div class="cat-stats">
                             <span>${s.count}件</span>
-                            <span>¥${s.value.toLocaleString()}</span>
                             ${s.countSold > 0 ? `<span class="${s.profit >= 0 ? 'profit' : 'loss'}">卖${s.countSold} ${s.profit >= 0 ? '+' : ''}¥${s.profit.toLocaleString()}</span>` : ''}
                         </div>
                     </div>
@@ -497,20 +459,6 @@
                     </div>
                 `).join('');
             } else { document.getElementById('month-section').style.display = 'none'; }
-            
-            // 建议
-            const suggestions = [];
-            if (idleCount > 0) suggestions.push(`🔄 有 ${idleCount} 件闲置物品，建议考虑出售或继续使用`);
-            if (totalProfit < 0) suggestions.push(`📉 卖出亏损 ¥${Math.abs(totalProfit).toLocaleString()}，建议定价时参考市场行情`);
-            if (expireCount > 0) suggestions.push(`⏰ ${expireCount} 件物品即将过期，请尽快处理`);
-            if (highValueCount > 0) suggestions.push(`💰 ${highValueCount} 件高价值物品，建议做好保管和保险`);
-            if (depreciationList.length > 0) suggestions.push(`📉 ${depreciationList.length} 件物品有明显折旧，出售时注意定价`);
-            if (suggestions.length === 0) suggestions.push('✅ 资产管理良好，继续保持！');
-            
-            if (suggestions.length > 0) {
-                document.getElementById('suggest-section').style.display = 'block';
-                document.getElementById('suggest-list').innerHTML = suggestions.map(s => `<div class="suggest">${s}</div>`).join('');
-            } else { document.getElementById('suggest-section').style.display = 'none'; }
         }
         
         function renderAll() { renderAnalysis(); renderAssets(); }
@@ -519,7 +467,6 @@
         function getFilteredAssets() {
             const today = new Date();
             return allAssets.filter(a => {
-                if (currentFilter === 'expiring') { if (a.status === 'sold' || !a.expire_date) return false; const d = Math.floor((new Date(a.expire_date) - today) / 86400000); return d <= 30 && d >= 0; }
                 if (currentFilter !== 'all' && a.status !== currentFilter) return false;
                 if (searchKeyword && !a.name?.toLowerCase().includes(searchKeyword) && !a.tags?.toLowerCase().includes(searchKeyword)) return false;
                 if (searchCategory && a.category !== searchCategory) return false;
@@ -539,42 +486,31 @@
             const list = document.getElementById('asset-list');
             if (filtered.length === 0) { list.innerHTML = '<div class="empty-state">暂无资产</div>'; return; }
             
-            filtered.sort((a, b) => {
-                if (a.expire_date && b.expire_date) return new Date(a.expire_date) - new Date(b.expire_date);
-                if (a.expire_date) return -1; if (b.expire_date) return 1;
-                return new Date(b.created_at) - new Date(a.created_at);
-            });
+            filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
             
             list.innerHTML = filtered.map(a => {
                 const buyDate = a.date || a.created_at?.split('T')[0] || '-';
                 const days = Math.max(1, Math.floor((today - new Date(buyDate)) / 86400000));
-                const dailyCost = ((a.price || 0) / days).toFixed(1);
-                const qty = a.quantity || 1;
                 const isSelected = selectedIds.has(a.id);
                 
-                let expireWarning = '', statusClass = `status-${a.status || 'active'}`;
+                let expireWarn = '';
                 if (a.expire_date && a.status !== 'sold') {
                     const d = Math.floor((new Date(a.expire_date) - today) / 86400000);
-                    if (d <= 0) { expireWarning = `<div class="expire-warning" style="background:#fee2e2;border-color:#dc2626">⚠️ 已过期 ${Math.abs(d)} 天</div>`; statusClass = 'status-expired'; }
-                    else if (d <= 30) expireWarning = `<div class="expire-warning">⏰ 还有 ${d} 天过期</div>`;
+                    if (d <= 30 && d >= 0) expireWarn = `<span class="expire-warn">${d}天后过期</span>`;
                 }
                 
                 const tags = a.tags ? a.tags.split(',').map(t => `<span class="tag">${t.trim()}</span>`).join('') : '';
-                const profitHtml = a.status === 'sold' && a.sell_price ? `<div class="cost-item"><span class="cost-label">盈亏</span><div class="cost-value ${a.sell_price >= a.price ? 'profit' : 'loss'}">${a.sell_price >= a.price ? '+' : ''}¥${(a.sell_price - a.price).toLocaleString()}</div></div>` : `<div class="cost-item"><span class="cost-label">日均</span><div class="cost-value">¥${dailyCost}</div></div>`;
                 
                 return `<div class="asset-card ${isSelected ? 'selected' : ''}">
-                    <div class="asset-header">
-                        <div style="display:flex;align-items:center;gap:10px;">
-                            <input type="checkbox" class="checkbox" ${isSelected ? 'checked' : ''} onclick="toggleSelect('${a.id}')">
-                            <div><div class="asset-name">${a.name}</div><div class="asset-meta"><span>${buyDate}</span><span>${days}天</span>${tags}</div></div>
-                        </div>
-                        <div style="text-align:right"><span class="asset-status ${statusClass}">${a.status==='active'?'使用中':a.status==='idle'?'闲置':a.status==='sold'?'已卖出':'已过期'}</span></div>
+                    <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+                        <input type="checkbox" class="checkbox" ${isSelected ? 'checked' : ''} onclick="toggleSelect('${a.id}')">
+                        <div class="asset-name">${a.name}</div>
+                        <span class="asset-status status-${a.status || 'active'}">${a.status==='active'?'使用中':a.status==='idle'?'闲置':'已卖出'}</span>
                     </div>
-                    <div class="asset-price">¥${Number(a.price).toLocaleString()}${qty > 1 ? ` ×${qty}` : ''}</div>
-                    ${expireWarning}
-                    <div class="asset-cost">${profitHtml}${a.location ? `<div class="cost-item"><span class="cost-label">位置</span><div class="cost-value">${a.location}</div></div>` : ''}${a.category ? `<div class="cost-item"><span class="cost-label">分类</span><div class="cost-value">${a.category}</div></div>` : ''}</div>
+                    <div class="asset-price">¥${Number(a.price).toLocaleString()}</div>
+                    <div class="asset-meta">${buyDate} · ${days}天 ${tags} ${expireWarn}</div>
                     <div class="asset-actions">
-                        ${a.status !== 'sold' ? `<button class="btn btn-sell" onclick="openSellModal('${a.id}')">卖出</button><button class="btn btn-idle" onclick="markStatus('${a.id}', '${a.status === 'idle' ? 'active' : 'idle'}')">${a.status === 'idle' ? '启用' : '闲置'}</button>` : ''}
+                        ${a.status !== 'sold' ? `<button class="btn btn-sell" onclick="openSellModal('${a.id}')">卖出</button>` : ''}
                         <button class="btn btn-edit" onclick="editAsset('${a.id}')">编辑</button>
                         <button class="btn btn-delete" onclick="deleteAsset('${a.id}')">删除</button>
                     </div>
@@ -583,42 +519,41 @@
         }
         
         function toggleFabMenu() { document.getElementById('fab-menu').classList.toggle('active'); }
-        function openAddModal() { toggleFabMenu(); document.getElementById('modal-title').textContent = '添加资产'; document.getElementById('asset-form').reset(); document.getElementById('asset-id').value = ''; document.getElementById('asset-date').value = new Date().toISOString().split('T')[0]; document.getElementById('asset-quantity').value = 1; document.getElementById('add-modal').classList.add('active'); }
+        function openAddModal() { toggleFabMenu(); document.getElementById('modal-title').textContent = '添加资产'; document.getElementById('asset-form').reset(); document.getElementById('asset-id').value = ''; document.getElementById('asset-date').value = new Date().toISOString().split('T')[0]; document.getElementById('asset-quantity').value = 1; document.getElementById('asset-dep-years').value = 5; document.getElementById('add-modal').classList.add('active'); }
         
         async function openScanModal() {
             toggleFabMenu(); document.getElementById('scan-modal').classList.add('active'); document.getElementById('scan-result').style.display = 'none'; document.getElementById('use-scan-btn').style.display = 'none';
-            try { html5QrCode = new Html5Qrcode("scanner-container"); await html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 250 } }, (text) => { document.getElementById('scan-result').style.display = 'block'; document.getElementById('scan-result').textContent = '条码: ' + text; document.getElementById('use-scan-btn').style.display = 'block'; html5QrCode.stop(); }, () => {}); } catch(e) { alert('无法启动摄像头: ' + e.message); }
+            try { html5QrCode = new Html5Qrcode("scanner-container"); await html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 200, height: 200 } }, (text) => { document.getElementById('scan-result').style.display = 'block'; document.getElementById('scan-result').textContent = text; document.getElementById('use-scan-btn').style.display = 'block'; html5QrCode.stop(); }, () => {}); } catch(e) { alert('无法启动摄像头'); }
         }
         function closeScanModal() { if (html5QrCode) html5QrCode.stop().catch(() => {}); closeModal('scan-modal'); }
-        function useScanResult() { const code = document.getElementById('scan-result').textContent.replace('条码: ', ''); closeScanModal(); document.getElementById('modal-title').textContent = '添加资产'; document.getElementById('asset-form').reset(); document.getElementById('asset-id').value = ''; document.getElementById('asset-date').value = new Date().toISOString().split('T')[0]; document.getElementById('asset-quantity').value = 1; document.getElementById('asset-barcode').value = code; document.getElementById('add-modal').classList.add('active'); }
+        function useScanResult() { const code = document.getElementById('scan-result').textContent; closeScanModal(); openAddModal(); document.getElementById('asset-barcode').value = code; }
         
         async function openPhotoModal() {
             toggleFabMenu(); document.getElementById('photo-modal').classList.add('active'); document.getElementById('camera-preview').style.display = 'block'; document.getElementById('captured-photo').style.display = 'none'; document.getElementById('photo-analysis').style.display = 'none'; document.getElementById('use-photo-btn').style.display = 'none'; document.getElementById('retake-btn').style.display = 'none'; document.getElementById('capture-btn').style.display = 'block';
-            try { cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }); document.getElementById('camera-preview').srcObject = cameraStream; } catch(e) { alert('无法启动摄像头: ' + e.message); }
+            try { cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }); document.getElementById('camera-preview').srcObject = cameraStream; } catch(e) { alert('无法启动摄像头'); }
         }
         function capturePhoto() { const video = document.getElementById('camera-preview'), canvas = document.getElementById('photo-canvas'), photo = document.getElementById('captured-photo'); canvas.width = video.videoWidth; canvas.height = video.videoHeight; canvas.getContext('2d').drawImage(video, 0, 0); photo.src = canvas.toDataURL('image/jpeg'); photo.style.display = 'block'; video.style.display = 'none'; if (cameraStream) cameraStream.getTracks().forEach(t => t.stop()); document.getElementById('capture-btn').style.display = 'none'; document.getElementById('retake-btn').style.display = 'block'; document.getElementById('photo-analysis').style.display = 'block'; document.getElementById('use-photo-btn').style.display = 'block'; }
         function retakePhoto() { document.getElementById('camera-preview').style.display = 'block'; document.getElementById('captured-photo').style.display = 'none'; document.getElementById('photo-analysis').style.display = 'none'; document.getElementById('use-photo-btn').style.display = 'none'; document.getElementById('retake-btn').style.display = 'none'; document.getElementById('capture-btn').style.display = 'block'; openPhotoModal(); }
         function closePhotoModal() { if (cameraStream) cameraStream.getTracks().forEach(t => t.stop()); closeModal('photo-modal'); }
-        function usePhotoResult() { const name = document.getElementById('photo-name').value, price = document.getElementById('photo-price').value; if (!name) { alert('请输入名称'); return; } closePhotoModal(); document.getElementById('modal-title').textContent = '添加资产'; document.getElementById('asset-form').reset(); document.getElementById('asset-id').value = ''; document.getElementById('asset-date').value = new Date().toISOString().split('T')[0]; document.getElementById('asset-quantity').value = 1; document.getElementById('asset-name').value = name; if (price) document.getElementById('asset-price').value = price; document.getElementById('add-modal').classList.add('active'); }
+        function usePhotoResult() { const name = document.getElementById('photo-name').value, price = document.getElementById('photo-price').value; if (!name) { alert('请输入名称'); return; } closePhotoModal(); openAddModal(); if (name) document.getElementById('asset-name').value = name; if (price) document.getElementById('asset-price').value = price; }
         
         document.getElementById('asset-form').addEventListener('submit', async (e) => {
             e.preventDefault(); const id = document.getElementById('asset-id').value, now = new Date().toISOString();
-            const data = { name: document.getElementById('asset-name').value, price: parseFloat(document.getElementById('asset-price').value), date: document.getElementById('asset-date').value, category: document.getElementById('asset-category').value, status: document.getElementById('asset-status').value, expire_date: document.getElementById('asset-expire').value || null, quantity: parseInt(document.getElementById('asset-quantity').value) || 1, location: document.getElementById('asset-location').value || null, warranty_date: document.getElementById('asset-warranty').value || null, barcode: document.getElementById('asset-barcode').value || null, tags: document.getElementById('asset-tags').value, note: document.getElementById('asset-note').value };
+            const data = { name: document.getElementById('asset-name').value, price: parseFloat(document.getElementById('asset-price').value), date: document.getElementById('asset-date').value, category: document.getElementById('asset-category').value, status: document.getElementById('asset-status').value, expire_date: document.getElementById('asset-expire').value || null, quantity: parseInt(document.getElementById('asset-quantity').value) || 1, dep_years: parseInt(document.getElementById('asset-dep-years').value) || 5, location: document.getElementById('asset-location').value || null, barcode: document.getElementById('asset-barcode').value || null, tags: document.getElementById('asset-tags').value };
             if (id) { const idx = allAssets.findIndex(a => a.id === id); if (idx !== -1) allAssets[idx] = { ...allAssets[idx], ...data, updated_at: now }; }
             else allAssets.push({ id: Date.now().toString(), ...data, sell_price: null, sell_date: null, sell_buyer: null, created_at: now, updated_at: now });
             await saveData(); closeModal('add-modal'); renderAll();
         });
         
-        function editAsset(id) { const a = allAssets.find(x => x.id === id); if (!a) return; document.getElementById('modal-title').textContent = '编辑'; document.getElementById('asset-id').value = a.id; document.getElementById('asset-name').value = a.name; document.getElementById('asset-price').value = a.price; document.getElementById('asset-date').value = a.date || ''; document.getElementById('asset-category').value = a.category || '其他'; document.getElementById('asset-status').value = a.status || 'active'; document.getElementById('asset-expire').value = a.expire_date || ''; document.getElementById('asset-quantity').value = a.quantity || 1; document.getElementById('asset-location').value = a.location || ''; document.getElementById('asset-warranty').value = a.warranty_date || ''; document.getElementById('asset-barcode').value = a.barcode || ''; document.getElementById('asset-tags').value = a.tags || ''; document.getElementById('asset-note').value = a.note || ''; document.getElementById('add-modal').classList.add('active'); }
+        function editAsset(id) { const a = allAssets.find(x => x.id === id); if (!a) return; document.getElementById('modal-title').textContent = '编辑'; document.getElementById('asset-id').value = a.id; document.getElementById('asset-name').value = a.name; document.getElementById('asset-price').value = a.price; document.getElementById('asset-date').value = a.date || ''; document.getElementById('asset-category').value = a.category || '其他'; document.getElementById('asset-status').value = a.status || 'active'; document.getElementById('asset-expire').value = a.expire_date || ''; document.getElementById('asset-quantity').value = a.quantity || 1; document.getElementById('asset-dep-years').value = a.dep_years || 5; document.getElementById('asset-location').value = a.location || ''; document.getElementById('asset-barcode').value = a.barcode || ''; document.getElementById('asset-tags').value = a.tags || ''; document.getElementById('add-modal').classList.add('active'); }
         async function deleteAsset(id) { if (!confirm('删除？')) return; allAssets = allAssets.filter(a => a.id !== id); await saveData(); renderAll(); }
-        function openSellModal(id) { document.getElementById('sell-asset-id').value = id; document.getElementById('sell-price').value = ''; document.getElementById('sell-date').value = new Date().toISOString().split('T')[0]; document.getElementById('sell-buyer').value = ''; document.getElementById('sell-modal').classList.add('active'); }
-        document.getElementById('sell-form').addEventListener('submit', async (e) => { e.preventDefault(); const id = document.getElementById('sell-asset-id').value, idx = allAssets.findIndex(a => a.id === id); if (idx !== -1) { allAssets[idx].status = 'sold'; allAssets[idx].sell_price = parseFloat(document.getElementById('sell-price').value); allAssets[idx].sell_date = document.getElementById('sell-date').value; allAssets[idx].sell_buyer = document.getElementById('sell-buyer').value || null; allAssets[idx].updated_at = new Date().toISOString(); await saveData(); } closeModal('sell-modal'); renderAll(); });
-        async function markStatus(id, status) { const idx = allAssets.findIndex(a => a.id === id); if (idx !== -1) { allAssets[idx].status = status; allAssets[idx].updated_at = new Date().toISOString(); await saveData(); } renderAll(); }
+        function openSellModal(id) { document.getElementById('sell-asset-id').value = id; document.getElementById('sell-price').value = ''; document.getElementById('sell-date').value = new Date().toISOString().split('T')[0]; document.getElementById('sell-modal').classList.add('active'); }
+        document.getElementById('sell-form').addEventListener('submit', async (e) => { e.preventDefault(); const id = document.getElementById('sell-asset-id').value, idx = allAssets.findIndex(a => a.id === id); if (idx !== -1) { allAssets[idx].status = 'sold'; allAssets[idx].sell_price = parseFloat(document.getElementById('sell-price').value); allAssets[idx].sell_date = document.getElementById('sell-date').value; allAssets[idx].updated_at = new Date().toISOString(); await saveData(); } closeModal('sell-modal'); renderAll(); });
         
         function openSettingsModal() { document.getElementById('settings-token').value = githubToken; document.getElementById('settings-gist-id').value = gistId; document.getElementById('settings-modal').classList.add('active'); }
         async function saveSettings() { const t = document.getElementById('settings-token').value.trim(), g = document.getElementById('settings-gist-id').value.trim(); if (t) { githubToken = t; localStorage.setItem(TOKEN_KEY, t); } if (g) { gistId = g; localStorage.setItem(GIST_ID_KEY, g); } closeModal('settings-modal'); await loadData(); }
         function showExportModal() { document.getElementById('export-modal').classList.add('active'); }
-        function exportData(type) { const today = new Date().toISOString().split('T')[0]; if (type === 'json') downloadFile(JSON.stringify(allAssets, null, 2), `资产_${today}.json`, 'application/json'); else if (type === 'csv') { const h = ['名称','分类','状态','价格','日期','数量','条码','位置','标签']; const r = allAssets.map(a => [a.name,a.category,a.status,a.price,a.date,a.quantity,a.barcode,a.location,a.tags].map(v => `"${v||''}"`).join(',')); downloadFile([h.join(','),...r].join('\n'), `资产_${today}.csv`, 'text/csv'); } else if (type === 'report') { let html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{font-family:sans-serif;padding:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:8px}</style></head><body><h1>资产报告 ${today}</h1><table><tr><th>名称</th><th>分类</th><th>状态</th><th>价格</th></tr>`; allAssets.forEach(a => { html += `<tr><td>${a.name}</td><td>${a.category}</td><td>${a.status}</td><td>¥${a.price}</td></tr>`; }); html += '</table></body></html>'; downloadFile(html, `报告_${today}.html`, 'text/html'); } closeModal('export-modal'); }
+        function exportData(type) { const today = new Date().toISOString().split('T')[0]; if (type === 'json') downloadFile(JSON.stringify(allAssets, null, 2), `资产_${today}.json`, 'application/json'); else if (type === 'csv') { const h = ['名称','分类','状态','价格','日期','数量','折旧年限','位置','标签']; const r = allAssets.map(a => [a.name,a.category,a.status,a.price,a.date,a.quantity,a.dep_years||5,a.location,a.tags].map(v => `"${v||''}"`).join(',')); downloadFile([h.join(','),...r].join('\n'), `资产_${today}.csv`, 'text/csv'); } closeModal('export-modal'); }
         function downloadFile(c, f, t) { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([c], { type: t })); a.download = f; a.click(); }
         
         document.querySelectorAll('.tab').forEach(tab => { tab.addEventListener('click', () => { document.querySelectorAll('.tab').forEach(t => t.classList.remove('active')); tab.classList.add('active'); currentFilter = tab.dataset.filter; selectedIds.clear(); updateBatchBar(); renderAssets(); }); });
