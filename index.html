@@ -25,21 +25,34 @@
         .stat-card.profit .value { color: #4ade80; }
         .stat-card.profit.loss .value { color: #f87171; }
         .content { padding: 20px; max-width: 600px; margin: 0 auto; }
-        .tabs { display: flex; background: white; border-radius: 12px; padding: 4px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); overflow-x: auto; }
-        .tab { flex: 1; padding: 10px; text-align: center; font-size: 13px; cursor: pointer; border-radius: 8px; transition: all 0.2s; white-space: nowrap; }
+        .tabs { display: flex; background: white; border-radius: 12px; padding: 4px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); overflow-x: auto; }
+        .tab { flex: 1; padding: 10px 8px; text-align: center; font-size: 13px; cursor: pointer; border-radius: 8px; transition: all 0.2s; white-space: nowrap; }
         .tab.active { background: #667eea; color: white; }
+        .search-bar { display: flex; gap: 8px; margin-bottom: 12px; }
+        .search-bar input { flex: 1; padding: 10px 12px; border: 1px solid #e0e0e0; border-radius: 10px; font-size: 14px; outline: none; }
+        .search-bar input:focus { border-color: #667eea; }
+        .search-bar select { padding: 10px; border: 1px solid #e0e0e0; border-radius: 10px; font-size: 13px; background: white; }
+        .batch-bar { display: none; background: #fef3c7; padding: 10px 12px; border-radius: 10px; margin-bottom: 12px; align-items: center; justify-content: space-between; }
+        .batch-bar.active { display: flex; }
+        .batch-bar span { font-size: 13px; }
+        .batch-actions { display: flex; gap: 8px; }
+        .batch-btn { padding: 6px 12px; border-radius: 6px; font-size: 12px; border: none; cursor: pointer; }
+        .batch-btn.sell { background: #667eea; color: white; }
+        .batch-btn.idle { background: #fef3c7; color: #d97706; }
+        .batch-btn.delete { background: #fee2e2; color: #dc2626; }
         .section-title { font-size: 16px; font-weight: 600; margin: 20px 0 12px; display: flex; align-items: center; gap: 8px; }
         .asset-list { display: flex; flex-direction: column; gap: 12px; }
         .asset-card { background: white; border-radius: 16px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .asset-card.selected { border: 2px solid #667eea; }
         .asset-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px; }
-        .asset-name { font-size: 16px; font-weight: 600; }
+        .asset-name { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
         .asset-status { font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: 500; }
         .status-active { background: #dcfce7; color: #16a34a; }
         .status-idle { background: #fef3c7; color: #d97706; }
         .status-sold { background: #e0e7ff; color: #4f46e5; }
         .status-expired { background: #fee2e2; color: #dc2626; }
         .asset-price { font-size: 24px; font-weight: 700; color: #667eea; }
-        .asset-meta { display: flex; gap: 16px; margin-top: 8px; font-size: 12px; color: #86868b; }
+        .asset-meta { display: flex; gap: 16px; margin-top: 8px; font-size: 12px; color: #86868b; flex-wrap: wrap; }
         .asset-cost { margin-top: 12px; padding-top: 12px; border-top: 1px solid #f0f0f5; display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 13px; }
         .cost-item .cost-label { color: #86868b; font-size: 11px; }
         .cost-item .cost-value { font-weight: 600; margin-top: 2px; }
@@ -72,13 +85,16 @@
         .empty-state { text-align: center; padding: 60px 20px; color: #86868b; }
         .empty-state .icon { font-size: 48px; margin-bottom: 16px; }
         .file-input { display: none; }
-        .quick-stats { background: white; border-radius: 16px; padding: 16px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .quick-stats { background: white; border-radius: 16px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
         .quick-stats h3 { font-size: 14px; color: #86868b; margin-bottom: 12px; }
         .quick-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; text-align: center; }
         .quick-stat-item .qs-value { font-size: 18px; font-weight: 700; color: #667eea; }
         .quick-stat-item .qs-label { font-size: 11px; color: #86868b; margin-top: 2px; }
         .expire-warning { background: #fef3c7; border-left: 3px solid #f59e0b; padding: 8px 12px; margin-top: 8px; font-size: 12px; border-radius: 0 8px 8px 0; }
         .tag { display: inline-block; background: #e0e7ff; color: #4f46e5; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-right: 4px; }
+        .checkbox { width: 20px; height: 20px; cursor: pointer; accent-color: #667eea; }
+        
+        /* 分析页面样式 */
         .analysis-section { background: white; border-radius: 16px; padding: 16px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
         .analysis-section h3 { font-size: 15px; margin-bottom: 12px; color: #1d1d1f; }
         .analysis-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
@@ -96,16 +112,42 @@
         .month-row { position: relative; padding: 10px 0; display: flex; justify-content: space-between; align-items: center; }
         .month-name { font-weight: 500; z-index: 1; }
         .month-stats { display: flex; gap: 12px; font-size: 13px; color: #86868b; z-index: 1; }
-        .month-bar { position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(90deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.05) 100%); border-radius: 8px; z-index: 0; }
+        .month-bar { position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(90deg, rgba(102,126,234,0.15) 0%, rgba(118,75,162,0.08) 100%); border-radius: 8px; z-index: 0; }
         .suggestions { display: flex; flex-direction: column; gap: 8px; }
         .suggestion { padding: 12px; background: #f9fafb; border-radius: 10px; font-size: 13px; line-height: 1.5; }
+        
+        /* 图表样式 */
+        .chart-container { margin: 16px 0; }
+        .pie-chart { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; padding: 16px 0; }
+        .pie-legend { display: flex; flex-direction: column; gap: 8px; min-width: 150px; }
+        .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+        .legend-color { width: 12px; height: 12px; border-radius: 3px; }
+        .bar-chart { padding: 16px 0; }
+        .bar-item { margin-bottom: 12px; }
+        .bar-label { font-size: 12px; margin-bottom: 4px; display: flex; justify-content: space-between; }
+        .bar-track { height: 24px; background: #f0f0f5; border-radius: 6px; overflow: hidden; }
+        .bar-fill { height: 100%; border-radius: 6px; transition: width 0.3s; }
+        
+        /* 折旧卡片 */
+        .depreciation-card { background: white; border-radius: 12px; padding: 12px; margin-bottom: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+        .depreciation-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .depreciation-name { font-weight: 600; }
+        .depreciation-original { font-size: 12px; color: #86868b; text-decoration: line-through; }
+        .depreciation-current { font-size: 18px; font-weight: 700; color: #667eea; }
+        .depreciation-bar { height: 6px; background: #f0f0f5; border-radius: 3px; margin-top: 8px; }
+        .depreciation-fill { height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); border-radius: 3px; }
+        
+        /* 导出选项 */
+        .export-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+        .export-btn { padding: 12px; background: #f9fafb; border: 1px solid #e0e0e0; border-radius: 10px; text-align: center; cursor: pointer; font-size: 13px; }
+        .export-btn:hover { background: #f0f0f5; }
     </style>
 </head>
 <body>
     <div class="sync-bar">
         <div class="sync-status" id="sync-status">🔄 加载中...</div>
         <button class="sync-btn" onclick="openSettingsModal()">⚙️</button>
-        <button class="sync-btn" onclick="exportData()">📤</button>
+        <button class="sync-btn" onclick="showExportModal()">📤</button>
         <button class="sync-btn" onclick="document.getElementById('import-file').click()">📥</button>
         <input type="file" id="import-file" class="file-input" accept=".json" onchange="importData(event)">
     </div>
@@ -131,6 +173,34 @@
             </div>
         </div>
         
+        <!-- 搜索筛选 -->
+        <div class="search-bar">
+            <input type="text" id="search-input" placeholder="🔍 搜索名称/标签..." oninput="handleSearch()">
+            <select id="filter-category" onchange="handleSearch()">
+                <option value="">全部分类</option>
+                <option value="数码">📱 数码</option>
+                <option value="电脑">💻 电脑</option>
+                <option value="家电">🎮 家电</option>
+                <option value="奢侈品">👜 奢侈品</option>
+                <option value="收藏">🎨 收藏</option>
+                <option value="日用品">🧴 日用品</option>
+                <option value="食品">🍎 食品</option>
+                <option value="金融">📈 金融</option>
+                <option value="其他">📦 其他</option>
+            </select>
+        </div>
+        
+        <!-- 批量操作栏 -->
+        <div class="batch-bar" id="batch-bar">
+            <span id="selected-count">已选 0 件</span>
+            <div class="batch-actions">
+                <button class="batch-btn sell" onclick="batchSetStatus('sold')">卖出</button>
+                <button class="batch-btn idle" onclick="batchSetStatus('idle')">闲置</button>
+                <button class="batch-btn idle" onclick="batchSetStatus('active')">使用中</button>
+                <button class="batch-btn delete" onclick="batchDelete()">删除</button>
+            </div>
+        </div>
+        
         <div class="tabs">
             <div class="tab active" data-filter="all">全部</div>
             <div class="tab" data-filter="active">使用中</div>
@@ -145,6 +215,7 @@
     
     <button class="fab" id="add-btn">+</button>
     
+    <!-- 设置弹窗 -->
     <div class="modal" id="settings-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -167,6 +238,39 @@
         </div>
     </div>
     
+    <!-- 导出弹窗 -->
+    <div class="modal" id="export-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📤 导出数据</h2>
+                <button class="modal-close" onclick="document.getElementById('export-modal').classList.remove('active')">×</button>
+            </div>
+            <div class="export-options">
+                <div class="export-btn" onclick="exportData('json')">
+                    <div style="font-size:24px;margin-bottom:4px;">📄</div>
+                    <div>JSON 格式</div>
+                    <div style="font-size:11px;color:#86868b">完整数据备份</div>
+                </div>
+                <div class="export-btn" onclick="exportData('csv')">
+                    <div style="font-size:24px;margin-bottom:4px;">📊</div>
+                    <div>CSV 格式</div>
+                    <div style="font-size:11px;color:#86868b">Excel 可打开</div>
+                </div>
+                <div class="export-btn" onclick="exportData('report')">
+                    <div style="font-size:24px;margin-bottom:4px;">📝</div>
+                    <div>资产报告</div>
+                    <div style="font-size:11px;color:#86868b">详细报表</div>
+                </div>
+                <div class="export-btn" onclick="exportData('summary')">
+                    <div style="font-size:24px;margin-bottom:4px;">📋</div>
+                    <div>汇总导出</div>
+                    <div style="font-size:11px;color:#86868b">分类汇总</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 添加资产弹窗 -->
     <div class="modal" id="add-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -202,8 +306,12 @@
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group"><label>过期日期</label><input type="date" id="asset-expire" placeholder="食品/保健品等"></div>
+                    <div class="form-group"><label>过期日期</label><input type="date" id="asset-expire"></div>
                     <div class="form-group"><label>数量</label><input type="number" id="asset-quantity" value="1" min="1"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>存放位置</label><input type="text" id="asset-location" placeholder="例如：卧室柜子"></div>
+                    <div class="form-group"><label>保修截止</label><input type="date" id="asset-warranty"></div>
                 </div>
                 <div class="form-group"><label>标签（逗号分隔）</label><input type="text" id="asset-tags" placeholder="例如：自用,送礼,投资"></div>
                 <div class="form-group"><label>备注</label><textarea id="asset-note" rows="2" placeholder="可选备注信息"></textarea></div>
@@ -212,6 +320,7 @@
         </div>
     </div>
     
+    <!-- 卖出弹窗 -->
     <div class="modal" id="sell-modal">
         <div class="modal-content">
             <div class="modal-header"><h2>卖出资产</h2><button class="modal-close" id="close-sell-modal">×</button></div>
@@ -243,6 +352,9 @@
         let allAssets = [];
         let currentFilter = 'all';
         let isSyncing = false;
+        let selectedIds = new Set();
+        let searchKeyword = '';
+        let searchCategory = '';
         
         // ========== 状态更新 ==========
         function updateSyncStatus(status) {
@@ -325,18 +437,100 @@
             await loadData();
         }
         
-        // ========== 导出导入 ==========
-        function exportData() {
-            const data = JSON.stringify(allAssets, null, 2);
-            const blob = new Blob([data], { type: 'application/json' });
+        // ========== 导出 ==========
+        function showExportModal() {
+            document.getElementById('export-modal').classList.add('active');
+        }
+        
+        function exportData(type) {
+            if (type === 'json') {
+                const data = JSON.stringify(allAssets, null, 2);
+                downloadFile(data, `个人资产_${new Date().toISOString().split('T')[0]}.json`, 'application/json');
+            } else if (type === 'csv') {
+                const headers = ['名称', '分类', '状态', '购买价格', '购买日期', '数量', '日均成本', '存放位置', '保修截止', '过期日期', '标签', '备注', '卖出价格', '卖出日期', '买家'];
+                const rows = allAssets.map(a => {
+                    const today = new Date();
+                    const buyDate = a.date || a.created_at?.split('T')[0];
+                    const days = buyDate ? Math.max(1, Math.floor((today - new Date(buyDate)) / 86400000)) : 1;
+                    const dailyCost = days > 0 ? (a.price || 0) / days : 0;
+                    return [
+                        a.name, a.category, a.status, a.price, buyDate, a.quantity || 1,
+                        dailyCost.toFixed(2), a.location || '', a.warranty_date || '',
+                        a.expire_date || '', a.tags || '', a.note || '',
+                        a.sell_price || '', a.sell_date || '', a.sell_buyer || ''
+                    ].map(v => `"${v}"`).join(',');
+                });
+                const csv = [headers.join(','), ...rows].join('\n');
+                downloadFile(csv, `个人资产_${new Date().toISOString().split('T')[0]}.csv`, 'text/csv');
+            } else if (type === 'report') {
+                const today = new Date();
+                let html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>资产报告</title>`;
+                html += `<style>body{font-family:-apple-system,sans-serif;padding:20px;max-width:800px;margin:0 auto}table{width:100%;border-collapse:collapse;margin:16px 0}th,td{border:1px solid #ddd;padding:8px;text-align:left}th{background:#667eea;color:white}tr:nth-child(even){background:#f9f9f9}.profit{color:#16a34a}.loss{color:#dc2626}</style>`;
+                html += `</head><body><h1>📊 个人资产报告</h1><p>生成时间：${today.toLocaleString('zh-CN')}</p>`;
+                
+                // 汇总
+                let totalValue = 0, totalProfit = 0, activeCount = 0, idleCount = 0;
+                allAssets.forEach(a => {
+                    if (a.status === 'sold') {
+                        totalProfit += (a.sell_price || 0) - (a.price || 0);
+                    } else {
+                        totalValue += (a.price || 0) * (a.quantity || 1);
+                        if (a.status === 'active') activeCount++;
+                        else if (a.status === 'idle') idleCount++;
+                    }
+                });
+                
+                html += `<h2>总体概览</h2><table><tr><th>指标</th><th>数值</th></tr>`;
+                html += `<tr><td>总资产价值</td><td>¥${totalValue.toLocaleString()}</td></tr>`;
+                html += `<tr><td>物品总数</td><td>${allAssets.length}件</td></tr>`;
+                html += `<tr><td>使用中</td><td>${activeCount}件</td></tr>`;
+                html += `<tr><td>闲置</td><td>${idleCount}件</td></tr>`;
+                html += `<tr><td>卖出盈亏</td><td class="${totalProfit >= 0 ? 'profit' : 'loss'}">${totalProfit >= 0 ? '+' : ''}¥${totalProfit.toLocaleString()}</td></tr>`;
+                html += `</table>`;
+                
+                // 详细列表
+                html += `<h2>物品明细</h2><table><tr><th>名称</th><th>分类</th><th>状态</th><th>价格</th><th>日均成本</th><th>位置</th></tr>`;
+                allAssets.forEach(a => {
+                    const buyDate = a.date || a.created_at?.split('T')[0];
+                    const days = buyDate ? Math.max(1, Math.floor((today - new Date(buyDate)) / 86400000)) : 1;
+                    const dailyCost = days > 0 ? (a.price || 0) / days : 0;
+                    html += `<tr><td>${a.name}</td><td>${a.category}</td><td>${a.status}</td><td>¥${a.price}</td><td>¥${dailyCost.toFixed(2)}</td><td>${a.location || '-'}</td></tr>`;
+                });
+                html += `</table></body></html>`;
+                downloadFile(html, `资产报告_${new Date().toISOString().split('T')[0]}.html`, 'text/html');
+            } else if (type === 'summary') {
+                const categoryStats = {};
+                allAssets.forEach(a => {
+                    const cat = a.category || '其他';
+                    if (!categoryStats[cat]) categoryStats[cat] = { count: 0, value: 0 };
+                    categoryStats[cat].count++;
+                    if (a.status !== 'sold') categoryStats[cat].value += (a.price || 0) * (a.quantity || 1);
+                });
+                
+                let html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>资产汇总</title>`;
+                html += `<style>body{font-family:-apple-system,sans-serif;padding:20px;max-width:600px;margin:0 auto}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:10px;text-align:left}th{background:#667eea;color:white}</style>`;
+                html += `</head><body><h1>📋 资产分类汇总</h1>`;
+                html += `<table><tr><th>分类</th><th>数量</th><th>价值</th></tr>`;
+                Object.entries(categoryStats).sort((a,b) => b[1].value - a[1].value).forEach(([cat, stats]) => {
+                    html += `<tr><td>${cat}</td><td>${stats.count}件</td><td>¥${stats.value.toLocaleString()}</td></tr>`;
+                });
+                html += `</table></body></html>`;
+                downloadFile(html, `资产汇总_${new Date().toISOString().split('T')[0]}.html`, 'text/html');
+            }
+            document.getElementById('export-modal').classList.remove('active');
+        }
+        
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], { type });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `个人资产_${new Date().toISOString().split('T')[0]}.json`;
+            a.download = filename;
             a.click();
             URL.revokeObjectURL(url);
         }
         
+        // ========== 导入 ==========
         async function importData(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -345,11 +539,13 @@
                 try {
                     const data = JSON.parse(e.target.result);
                     if (Array.isArray(data)) {
-                        allAssets = data;
-                        await saveData();
-                        renderAssets();
-                        updateStats();
-                        alert('导入成功！');
+                        if (confirm(`确定要导入吗？这将替换当前 ${allAssets.length} 件物品。`)) {
+                            allAssets = data;
+                            await saveData();
+                            renderAssets();
+                            updateStats();
+                            alert('导入成功！');
+                        }
                     }
                 } catch (err) { alert('导入失败: ' + err.message); }
             };
@@ -357,11 +553,81 @@
             event.target.value = '';
         }
         
+        // ========== 搜索筛选 ==========
+        function handleSearch() {
+            searchKeyword = document.getElementById('search-input').value.toLowerCase();
+            searchCategory = document.getElementById('filter-category').value;
+            renderAssets();
+        }
+        
+        // ========== 批量操作 ==========
+        function toggleSelect(id) {
+            if (selectedIds.has(id)) selectedIds.delete(id);
+            else selectedIds.add(id);
+            updateBatchBar();
+            renderAssets();
+        }
+        
+        function selectAll() {
+            const filtered = getFilteredAssets();
+            if (selectedIds.size === filtered.length) {
+                selectedIds.clear();
+            } else {
+                filtered.forEach(a => selectedIds.add(a.id));
+            }
+            updateBatchBar();
+            renderAssets();
+        }
+        
+        function updateBatchBar() {
+            const bar = document.getElementById('batch-bar');
+            const count = document.getElementById('selected-count');
+            if (selectedIds.size > 0) {
+                bar.classList.add('active');
+                count.textContent = `已选 ${selectedIds.size} 件`;
+            } else {
+                bar.classList.remove('active');
+            }
+        }
+        
+        async function batchSetStatus(status) {
+            if (selectedIds.size === 0) return;
+            const count = selectedIds.size;
+            selectedIds.forEach(id => {
+                const idx = allAssets.findIndex(a => a.id === id);
+                if (idx !== -1) {
+                    allAssets[idx].status = status;
+                    allAssets[idx].updated_at = new Date().toISOString();
+                    if (status === 'sold') {
+                        allAssets[idx].sell_date = new Date().toISOString().split('T')[0];
+                    }
+                }
+            });
+            selectedIds.clear();
+            updateBatchBar();
+            await saveData();
+            renderAssets();
+            updateStats();
+            alert(`已更新 ${count} 件物品状态`);
+        }
+        
+        async function batchDelete() {
+            if (selectedIds.size === 0) return;
+            if (!confirm(`确定要删除选中的 ${selectedIds.size} 件物品吗？`)) return;
+            allAssets = allAssets.filter(a => !selectedIds.has(a.id));
+            selectedIds.clear();
+            updateBatchBar();
+            await saveData();
+            renderAssets();
+            updateStats();
+            alert('已删除选中物品');
+        }
+        
         // ========== 统计和渲染 ==========
         function updateStats() {
             let totalValue = 0, idleCount = 0, totalProfit = 0, expireCount = 0, highValueCount = 0, totalDailyCost = 0, activeCount = 0;
             const today = new Date();
-            const expireThreshold = 30; // 30天内过期
+            const expireThreshold = 30;
             
             allAssets.forEach(a => {
                 if (a.status === 'sold') {
@@ -371,7 +637,6 @@
                     if (a.status === 'idle') idleCount++;
                     if (a.price >= 1000) highValueCount++;
                     
-                    // 日均成本
                     const buyDate = a.date || a.created_at?.split('T')[0];
                     if (buyDate) {
                         const days = Math.max(1, Math.floor((today - new Date(buyDate)) / 86400000));
@@ -379,10 +644,8 @@
                         activeCount++;
                     }
                     
-                    // 过期检查
                     if (a.expire_date) {
-                        const expireDate = new Date(a.expire_date);
-                        const daysToExpire = Math.floor((expireDate - today) / 86400000);
+                        const daysToExpire = Math.floor((new Date(a.expire_date) - today) / 86400000);
                         if (daysToExpire <= expireThreshold && daysToExpire >= 0) expireCount++;
                     }
                 }
@@ -401,6 +664,32 @@
             else { profitCard.classList.add('loss'); profitEl.textContent = `-¥${Math.abs(totalProfit).toLocaleString()}`; }
         }
         
+        function getFilteredAssets() {
+            const today = new Date();
+            const expireThreshold = 30;
+            
+            return allAssets.filter(a => {
+                // 状态筛选
+                if (currentFilter === 'expiring') {
+                    if (a.status === 'sold' || !a.expire_date) return false;
+                    const daysToExpire = Math.floor((new Date(a.expire_date) - today) / 86400000);
+                    return daysToExpire <= expireThreshold && daysToExpire >= 0;
+                }
+                if (currentFilter !== 'all' && a.status !== currentFilter) return false;
+                
+                // 搜索筛选
+                if (searchKeyword) {
+                    const nameMatch = a.name?.toLowerCase().includes(searchKeyword);
+                    const tagMatch = a.tags?.toLowerCase().includes(searchKeyword);
+                    const noteMatch = a.note?.toLowerCase().includes(searchKeyword);
+                    if (!nameMatch && !tagMatch && !noteMatch) return false;
+                }
+                if (searchCategory && a.category !== searchCategory) return false;
+                
+                return true;
+            });
+        }
+        
         // ========== 分析页面 ==========
         function renderAnalysis() {
             const today = new Date();
@@ -409,12 +698,20 @@
             // 分类统计
             const categoryStats = {};
             const monthlyStats = {};
+            const depreciationList = [];
             let totalValue = 0, totalCost = 0, totalProfit = 0;
             let activeCount = 0, idleCount = 0, soldCount = 0;
             
+            // 颜色映射
+            const colorMap = {
+                '数码': '#667eea', '电脑': '#764ba2', '家电': '#f59e0b',
+                '奢侈品': '#ec4899', '收藏': '#8b5cf6', '日用品': '#10b981',
+                '食品': '#ef4444', '金融': '#3b82f6', '其他': '#6b7280'
+            };
+            
             allAssets.forEach(a => {
                 const cat = a.category || '其他';
-                if (!categoryStats[cat]) categoryStats[cat] = { count: 0, value: 0, countSold: 0, profit: 0 };
+                if (!categoryStats[cat]) categoryStats[cat] = { count: 0, value: 0, countSold: 0, profit: 0, color: colorMap[cat] || colorMap['其他'] };
                 categoryStats[cat].count++;
                 
                 if (a.status === 'sold') {
@@ -428,15 +725,28 @@
                     if (a.status === 'active') activeCount++;
                     else if (a.status === 'idle') idleCount++;
                     
-                    // 日均成本
                     const buyDate = a.date || a.created_at?.split('T')[0];
                     if (buyDate) {
                         const days = Math.max(1, Math.floor((today - new Date(buyDate)) / 86400000));
                         totalCost += (a.price || 0) / days;
+                        
+                        // 折旧计算 (按5年折旧)
+                        const originalPrice = a.price || 0;
+                        const usefulLife = 5 * 365;
+                        const depreciation = Math.min(originalPrice, originalPrice * (days / usefulLife));
+                        const currentValue = originalPrice - depreciation;
+                        if (days > 30) { // 超过30天才计算折旧
+                            depreciationList.push({
+                                name: a.name,
+                                original: originalPrice,
+                                current: Math.round(currentValue),
+                                depreciation: Math.round(depreciation),
+                                percent: Math.round((depreciation / originalPrice) * 100)
+                            });
+                        }
                     }
                 }
                 
-                // 月度统计
                 const month = (a.date || a.created_at?.split('T')[0] || '').substring(0, 7);
                 if (month) {
                     if (!monthlyStats[month]) monthlyStats[month] = { count: 0, value: 0 };
@@ -445,9 +755,12 @@
                 }
             });
             
-            // 排序分类
             const sortedCategories = Object.entries(categoryStats).sort((a, b) => b[1].value - a[1].value);
             const sortedMonths = Object.entries(monthlyStats).sort((a, b) => b[0].localeCompare(a[0])).slice(0, 6);
+            const maxMonthValue = Math.max(...sortedMonths.map(m => m[1].value), 1);
+            
+            // 饼图数据
+            const pieData = sortedCategories.filter(([_, s]) => s.value > 0);
             
             list.innerHTML = `
                 <div class="analysis-section">
@@ -464,29 +777,63 @@
                 </div>
                 
                 <div class="analysis-section">
+                    <h3>🥧 分类占比</h3>
+                    <div class="pie-chart">
+                        <div style="width:120px;height:120px;border-radius:50%;background:conic-gradient(${pieData.map(([cat, s], i) => `${s.color} ${Math.round((s.value / totalValue) * 100)}%`).join(', ')});"></div>
+                        <div class="pie-legend">
+                            ${pieData.slice(0, 5).map(([cat, s]) => `
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background:${s.color}"></div>
+                                    <span>${cat} ¥${s.value.toLocaleString()}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analysis-section">
+                    <h3>📊 月度购买趋势</h3>
+                    <div class="bar-chart">
+                        ${sortedMonths.map(([month, stats]) => `
+                            <div class="bar-item">
+                                <div class="bar-label"><span>${month}</span><span>¥${stats.value.toLocaleString()} (${stats.count}件)</span></div>
+                                <div class="bar-track">
+                                    <div class="bar-fill" style="width:${(stats.value / maxMonthValue) * 100}%;background:linear-gradient(90deg, #667eea, #764ba2)"></div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                
+                ${depreciationList.length > 0 ? `
+                <div class="analysis-section">
+                    <h3>📉 资产折旧（按5年折旧）</h3>
+                    ${depreciationList.slice(0, 5).map(d => `
+                        <div class="depreciation-card">
+                            <div class="depreciation-header">
+                                <div class="depreciation-name">${d.name}</div>
+                                <div class="depreciation-original">¥${d.original}</div>
+                            </div>
+                            <div class="depreciation-current">¥${d.current}</div>
+                            <div class="depreciation-bar">
+                                <div class="depreciation-fill" style="width:${100 - d.percent}%"></div>
+                            </div>
+                            <div style="font-size:11px;color:#86868b;margin-top:4px">已折旧 ${d.percent}%</div>
+                        </div>
+                    `).join('')}
+                </div>
+                ` : ''}
+                
+                <div class="analysis-section">
                     <h3>📁 分类统计</h3>
                     ${sortedCategories.map(([cat, stats]) => `
                         <div class="category-row">
-                            <div class="cat-name">${cat}</div>
+                            <div class="cat-name"><span class="legend-color" style="display:inline-block;width:10px;height:10px;background:${stats.color};border-radius:2px;margin-right:8px"></span>${cat}</div>
                             <div class="cat-stats">
                                 <span>${stats.count}件</span>
                                 <span>¥${stats.value.toLocaleString()}</span>
                                 ${stats.countSold > 0 ? `<span class="${stats.profit >= 0 ? 'profit' : 'loss'}">卖出${stats.countSold}件 ${stats.profit >= 0 ? '+' : ''}¥${stats.profit.toLocaleString()}</span>` : ''}
                             </div>
-                        </div>
-                    `).join('')}
-                </div>
-                
-                <div class="analysis-section">
-                    <h3>📅 月度购买趋势</h3>
-                    ${sortedMonths.map(([month, stats]) => `
-                        <div class="month-row">
-                            <div class="month-name">${month}</div>
-                            <div class="month-stats">
-                                <span>${stats.count}件</span>
-                                <span>¥${stats.value.toLocaleString()}</span>
-                            </div>
-                            <div class="month-bar" style="width: ${Math.min(100, stats.value / Math.max(...sortedMonths.map(m => m[1].value)) * 100)}%"></div>
                         </div>
                     `).join('')}
                 </div>
@@ -498,6 +845,7 @@
                         ${totalProfit < 0 ? `<div class="suggestion">📉 卖出亏损 ¥${Math.abs(totalProfit).toLocaleString()}，建议定价时参考市场行情</div>` : ''}
                         ${totalValue > 100000 ? `<div class="suggestion">💰 总资产较高，建议做好资产盘点和保险</div>` : ''}
                         ${idleCount === 0 && totalProfit >= 0 ? `<div class="suggestion">✅ 资产管理良好，继续保持！</div>` : ''}
+                        ${depreciationList.length > 0 ? `<div class="suggestion">📉 ${depreciationList.length} 件物品已有折旧，可考虑是否继续持有</div>` : ''}
                     </div>
                 </div>
             `;
@@ -513,19 +861,15 @@
                 return;
             }
             
-            let filtered = allAssets.filter(a => {
-                if (currentFilter === 'expiring') {
-                    if (a.status === 'sold' || !a.expire_date) return false;
-                    const daysToExpire = Math.floor((new Date(a.expire_date) - today) / 86400000);
-                    return daysToExpire <= expireThreshold && daysToExpire >= 0;
-                }
-                return currentFilter === 'all' || a.status === currentFilter;
-            });
-            
+            const filtered = getFilteredAssets();
             const list = document.getElementById('asset-list');
-            if (filtered.length === 0) { list.innerHTML = '<div class="empty-state"><div class="icon">📦</div>暂无资产<br>点击右下角+添加</div>'; return; }
             
-            // 排序：即将过期的优先
+            if (filtered.length === 0) {
+                list.innerHTML = '<div class="empty-state"><div class="icon">📦</div>暂无资产<br>点击右下角+添加</div>';
+                return;
+            }
+            
+            // 排序
             filtered.sort((a, b) => {
                 if (a.expire_date && b.expire_date) {
                     return new Date(a.expire_date) - new Date(b.expire_date);
@@ -540,8 +884,8 @@
                 const days = Math.max(1, Math.floor((today - new Date(buyDate)) / 86400000));
                 const dailyCost = days > 0 ? ((asset.price || 0) / days).toFixed(2) : (asset.price || 0);
                 const quantity = asset.quantity || 1;
+                const isSelected = selectedIds.has(asset.id);
                 
-                // 过期警告
                 let expireWarning = '';
                 let statusClass = `status-${asset.status || 'active'}`;
                 if (asset.expire_date && asset.status !== 'sold') {
@@ -554,8 +898,9 @@
                     }
                 }
                 
-                // 标签
                 const tags = asset.tags ? asset.tags.split(',').map(t => `<span class="tag">${t.trim()}</span>`).join('') : '';
+                const locationHtml = asset.location ? `<div class="cost-item"><span class="cost-label">位置</span><div class="cost-value">${asset.location}</div></div>` : '';
+                const warrantyHtml = asset.warranty_date ? `<div class="cost-item"><span class="cost-label">保修</span><div class="cost-value">${asset.warranty_date}</div></div>` : '';
                 
                 const profitHtml = asset.status === 'sold' && asset.sell_price
                     ? `<div class="cost-item"><span class="cost-label">盈亏</span><div class="cost-value ${asset.sell_price >= asset.price ? 'profit' : 'loss'}">${asset.sell_price >= asset.price ? '+' : ''}¥${(asset.sell_price - asset.price).toLocaleString()}</div></div>`
@@ -570,11 +915,14 @@
                 const expireHtml = asset.expire_date && asset.status !== 'sold' 
                     ? `<div class="cost-item"><span class="cost-label">过期日期</span><div class="cost-value">${asset.expire_date}</div></div>` : '';
                 
-                return `<div class="asset-card">
+                return `<div class="asset-card ${isSelected ? 'selected' : ''}">
                     <div class="asset-header">
-                        <div>
-                            <div class="asset-name">${asset.name}</div>
-                            <div class="asset-meta"><span>${buyDate}</span><span>${days}天</span>${tags}</div>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <input type="checkbox" class="checkbox" ${isSelected ? 'checked' : ''} onclick="toggleSelect('${asset.id}')">
+                            <div>
+                                <div class="asset-name">${asset.name}</div>
+                                <div class="asset-meta"><span>${buyDate}</span><span>${days}天</span>${tags}</div>
+                            </div>
                         </div>
                         <div style="text-align:right">
                             <span class="asset-status ${statusClass}">${asset.status==='active'?'使用中':asset.status==='idle'?'闲置':asset.status==='sold'?'已卖出':'已过期'}</span>
@@ -583,7 +931,7 @@
                     </div>
                     <div class="asset-price">¥${Number(asset.price).toLocaleString()}${quantity > 1 ? ` × ${quantity}` : ''}</div>
                     ${expireWarning}
-                    <div class="asset-cost">${profitHtml}${quantityHtml}${expireHtml}${sellInfoHtml}</div>
+                    <div class="asset-cost">${profitHtml}${quantityHtml}${expireHtml}${sellInfoHtml}${locationHtml}${warrantyHtml}</div>
                     <div class="asset-actions">
                         ${asset.status !== 'sold' ? `
                             <button class="btn btn-sell" onclick="openSellModal('${asset.id}')">卖出</button>
@@ -602,6 +950,8 @@
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
                 currentFilter = tab.dataset.filter;
+                selectedIds.clear();
+                updateBatchBar();
                 renderAssets();
             });
         });
@@ -633,6 +983,8 @@
                 status: document.getElementById('asset-status').value,
                 expire_date: document.getElementById('asset-expire').value || null,
                 quantity: parseInt(document.getElementById('asset-quantity').value) || 1,
+                location: document.getElementById('asset-location').value || null,
+                warranty_date: document.getElementById('asset-warranty').value || null,
                 tags: document.getElementById('asset-tags').value,
                 note: document.getElementById('asset-note').value
             };
@@ -674,6 +1026,8 @@
             document.getElementById('asset-status').value = asset.status || 'active';
             document.getElementById('asset-expire').value = asset.expire_date || '';
             document.getElementById('asset-quantity').value = asset.quantity || 1;
+            document.getElementById('asset-location').value = asset.location || '';
+            document.getElementById('asset-warranty').value = asset.warranty_date || '';
             document.getElementById('asset-tags').value = asset.tags || '';
             document.getElementById('asset-note').value = asset.note || '';
             document.getElementById('add-modal').classList.add('active');
@@ -724,7 +1078,7 @@
         }
         
         // ========== 初始化 ==========
-        // v2.1.0 - added analysis
+        // v2.2.0 - added search, batch, export, charts, depreciation
         loadData();
         
         document.addEventListener('visibilitychange', () => { if (!document.hidden) loadData(); });
