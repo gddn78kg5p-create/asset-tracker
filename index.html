@@ -79,6 +79,26 @@
         .quick-stat-item .qs-label { font-size: 11px; color: #86868b; margin-top: 2px; }
         .expire-warning { background: #fef3c7; border-left: 3px solid #f59e0b; padding: 8px 12px; margin-top: 8px; font-size: 12px; border-radius: 0 8px 8px 0; }
         .tag { display: inline-block; background: #e0e7ff; color: #4f46e5; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-right: 4px; }
+        .analysis-section { background: white; border-radius: 16px; padding: 16px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .analysis-section h3 { font-size: 15px; margin-bottom: 12px; color: #1d1d1f; }
+        .analysis-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .analysis-item { padding: 12px; background: #f9fafb; border-radius: 10px; }
+        .analysis-item .ai-label { display: block; font-size: 11px; color: #86868b; margin-bottom: 4px; }
+        .analysis-item .ai-value { font-size: 18px; font-weight: 700; color: #1d1d1f; }
+        .analysis-item.profit .ai-value { color: #16a34a; }
+        .analysis-item.loss .ai-value { color: #dc2626; }
+        .category-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0f0f5; }
+        .category-row:last-child { border-bottom: none; }
+        .cat-name { font-weight: 500; }
+        .cat-stats { display: flex; gap: 12px; font-size: 13px; color: #86868b; }
+        .cat-stats .profit { color: #16a34a; }
+        .cat-stats .loss { color: #dc2626; }
+        .month-row { position: relative; padding: 10px 0; display: flex; justify-content: space-between; align-items: center; }
+        .month-name { font-weight: 500; z-index: 1; }
+        .month-stats { display: flex; gap: 12px; font-size: 13px; color: #86868b; z-index: 1; }
+        .month-bar { position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(90deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.05) 100%); border-radius: 8px; z-index: 0; }
+        .suggestions { display: flex; flex-direction: column; gap: 8px; }
+        .suggestion { padding: 12px; background: #f9fafb; border-radius: 10px; font-size: 13px; line-height: 1.5; }
     </style>
 </head>
 <body>
@@ -117,6 +137,7 @@
             <div class="tab" data-filter="idle">闲置</div>
             <div class="tab" data-filter="sold">已卖出</div>
             <div class="tab" data-filter="expiring">即将过期</div>
+            <div class="tab" data-filter="analysis">📊 分析</div>
         </div>
         
         <div class="asset-list" id="asset-list"><div class="empty-state"><div class="icon">📦</div>加载中...</div></div>
@@ -380,9 +401,117 @@
             else { profitCard.classList.add('loss'); profitEl.textContent = `-¥${Math.abs(totalProfit).toLocaleString()}`; }
         }
         
+        // ========== 分析页面 ==========
+        function renderAnalysis() {
+            const today = new Date();
+            const list = document.getElementById('asset-list');
+            
+            // 分类统计
+            const categoryStats = {};
+            const monthlyStats = {};
+            let totalValue = 0, totalCost = 0, totalProfit = 0;
+            let activeCount = 0, idleCount = 0, soldCount = 0;
+            
+            allAssets.forEach(a => {
+                const cat = a.category || '其他';
+                if (!categoryStats[cat]) categoryStats[cat] = { count: 0, value: 0, countSold: 0, profit: 0 };
+                categoryStats[cat].count++;
+                
+                if (a.status === 'sold') {
+                    categoryStats[cat].countSold++;
+                    categoryStats[cat].profit += (a.sell_price || 0) - (a.price || 0);
+                    totalProfit += (a.sell_price || 0) - (a.price || 0);
+                    soldCount++;
+                } else {
+                    categoryStats[cat].value += (a.price || 0) * (a.quantity || 1);
+                    totalValue += (a.price || 0) * (a.quantity || 1);
+                    if (a.status === 'active') activeCount++;
+                    else if (a.status === 'idle') idleCount++;
+                    
+                    // 日均成本
+                    const buyDate = a.date || a.created_at?.split('T')[0];
+                    if (buyDate) {
+                        const days = Math.max(1, Math.floor((today - new Date(buyDate)) / 86400000));
+                        totalCost += (a.price || 0) / days;
+                    }
+                }
+                
+                // 月度统计
+                const month = (a.date || a.created_at?.split('T')[0] || '').substring(0, 7);
+                if (month) {
+                    if (!monthlyStats[month]) monthlyStats[month] = { count: 0, value: 0 };
+                    monthlyStats[month].count++;
+                    monthlyStats[month].value += (a.price || 0);
+                }
+            });
+            
+            // 排序分类
+            const sortedCategories = Object.entries(categoryStats).sort((a, b) => b[1].value - a[1].value);
+            const sortedMonths = Object.entries(monthlyStats).sort((a, b) => b[0].localeCompare(a[0])).slice(0, 6);
+            
+            list.innerHTML = `
+                <div class="analysis-section">
+                    <h3>📈 总体概览</h3>
+                    <div class="analysis-grid">
+                        <div class="analysis-item"><span class="ai-label">总资产价值</span><span class="ai-value">¥${totalValue.toLocaleString()}</span></div>
+                        <div class="analysis-item"><span class="ai-label">物品总数</span><span class="ai-value">${allAssets.length}件</span></div>
+                        <div class="analysis-item"><span class="ai-label">使用中</span><span class="ai-value">${activeCount}件</span></div>
+                        <div class="analysis-item"><span class="ai-label">闲置中</span><span class="ai-value">${idleCount}件</span></div>
+                        <div class="analysis-item"><span class="ai-label">已卖出</span><span class="ai-value">${soldCount}件</span></div>
+                        <div class="analysis-item"><span class="ai-label">平均日均成本</span><span class="ai-value">¥${(totalCost / Math.max(1, activeCount + idleCount)).toFixed(2)}</span></div>
+                        <div class="analysis-item ${totalProfit >= 0 ? 'profit' : 'loss'}"><span class="ai-label">卖出总盈亏</span><span class="ai-value">${totalProfit >= 0 ? '+' : ''}¥${totalProfit.toLocaleString()}</span></div>
+                    </div>
+                </div>
+                
+                <div class="analysis-section">
+                    <h3>📁 分类统计</h3>
+                    ${sortedCategories.map(([cat, stats]) => `
+                        <div class="category-row">
+                            <div class="cat-name">${cat}</div>
+                            <div class="cat-stats">
+                                <span>${stats.count}件</span>
+                                <span>¥${stats.value.toLocaleString()}</span>
+                                ${stats.countSold > 0 ? `<span class="${stats.profit >= 0 ? 'profit' : 'loss'}">卖出${stats.countSold}件 ${stats.profit >= 0 ? '+' : ''}¥${stats.profit.toLocaleString()}</span>` : ''}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div class="analysis-section">
+                    <h3>📅 月度购买趋势</h3>
+                    ${sortedMonths.map(([month, stats]) => `
+                        <div class="month-row">
+                            <div class="month-name">${month}</div>
+                            <div class="month-stats">
+                                <span>${stats.count}件</span>
+                                <span>¥${stats.value.toLocaleString()}</span>
+                            </div>
+                            <div class="month-bar" style="width: ${Math.min(100, stats.value / Math.max(...sortedMonths.map(m => m[1].value)) * 100)}%"></div>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div class="analysis-section">
+                    <h3>💡 建议</h3>
+                    <div class="suggestions">
+                        ${idleCount > 0 ? `<div class="suggestion">🔄 有 ${idleCount} 件闲置物品，建议考虑二手出售或继续使用</div>` : ''}
+                        ${totalProfit < 0 ? `<div class="suggestion">📉 卖出亏损 ¥${Math.abs(totalProfit).toLocaleString()}，建议定价时参考市场行情</div>` : ''}
+                        ${totalValue > 100000 ? `<div class="suggestion">💰 总资产较高，建议做好资产盘点和保险</div>` : ''}
+                        ${idleCount === 0 && totalProfit >= 0 ? `<div class="suggestion">✅ 资产管理良好，继续保持！</div>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+        
         function renderAssets() {
             const today = new Date();
             const expireThreshold = 30;
+            
+            // 分析页面
+            if (currentFilter === 'analysis') {
+                renderAnalysis();
+                return;
+            }
             
             let filtered = allAssets.filter(a => {
                 if (currentFilter === 'expiring') {
@@ -595,7 +724,7 @@
         }
         
         // ========== 初始化 ==========
-        // v2.0.1 - fixed
+        // v2.1.0 - added analysis
         loadData();
         
         document.addEventListener('visibilitychange', () => { if (!document.hidden) loadData(); });
