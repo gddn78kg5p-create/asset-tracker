@@ -6,119 +6,123 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta name="theme-color" content="#667eea">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>个人资产追踪 Pro</title>
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f7; color: #1d1d1f; min-height: 100vh; padding-bottom: 100px; }
-        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 16px; border-radius: 0 0 20px 20px; }
-        .header h1 { font-size: 18px; margin-bottom: 12px; }
-        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-        .stat-card { background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border-radius: 10px; padding: 10px 8px; text-align: center; }
-        .stat-card .label { font-size: 10px; opacity: 0.9; }
-        .stat-card .value { font-size: 18px; font-weight: 700; margin-top: 2px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f7; color: #1d1d1f; min-height: 100vh; padding-bottom: 80px; font-size: 16px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px 16px; }
+        .header h1 { font-size: 22px; margin-bottom: 16px; }
+        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .stat-card { background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border-radius: 12px; padding: 14px 10px; text-align: center; }
+        .stat-card .label { font-size: 12px; opacity: 0.9; }
+        .stat-card .value { font-size: 22px; font-weight: 700; margin-top: 4px; }
         .stat-card.profit .value { color: #4ade80; }
         .stat-card.profit.loss .value { color: #f87171; }
-        .content { padding: 12px; max-width: 600px; margin: 0 auto; }
+        .content { padding: 12px 8px; }
         
-        /* 分析卡片 - 紧凑版 */
-        .analysis-section { background: white; border-radius: 14px; padding: 12px; margin-bottom: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
-        .analysis-section h3 { font-size: 13px; color: #86868b; margin-bottom: 10px; display: flex; align-items: center; gap: 4px; }
-        .analysis-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-        .analysis-item { text-align: center; padding: 6px 4px; background: #f9fafb; border-radius: 8px; }
-        .analysis-item .ai-value { font-size: 15px; font-weight: 700; color: #667eea; }
-        .analysis-item .ai-label { font-size: 9px; color: #86868b; margin-top: 1px; }
-        .analysis-item.profit .ai-value { color: #16a34a; }
-        .analysis-item.loss .ai-value { color: #dc2626; }
+        /* 分析卡片 */
+        .section { background: white; border-radius: 14px; padding: 14px; margin-bottom: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+        .section h3 { font-size: 15px; color: #666; margin-bottom: 12px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .grid-item { text-align: center; padding: 10px 6px; background: #f9fafb; border-radius: 10px; }
+        .grid-item .val { font-size: 20px; font-weight: 700; color: #667eea; }
+        .grid-item .lbl { font-size: 11px; color: #86868b; margin-top: 2px; }
+        .grid-item.profit .val { color: #16a34a; }
+        .grid-item.loss .val { color: #dc2626; }
         
-        /* 分类统计 - 横向紧凑 */
-        .category-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #f0f0f5; font-size: 12px; }
-        .category-row:last-child { border-bottom: none; }
-        .cat-dot { width: 8px; height: 8px; border-radius: 2px; margin-right: 6px; display: inline-block; }
-        .cat-stats { display: flex; gap: 10px; color: #86868b; }
+        /* 折旧 - 当前价值 */
+        .dep-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0f0f5; }
+        .dep-item:last-child { border-bottom: none; }
+        .dep-name { font-size: 15px; font-weight: 500; }
+        .dep-values { display: flex; gap: 16px; align-items: center; }
+        .dep-original { font-size: 13px; color: #86868b; text-decoration: line-through; }
+        .dep-current { font-size: 18px; font-weight: 700; color: #667eea; }
+        .dep-down { font-size: 12px; color: #dc2626; background: #fee2e2; padding: 2px 6px; border-radius: 4px; }
+        
+        /* 分类 */
+        .cat-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f0f0f5; font-size: 15px; }
+        .cat-row:last-child { border-bottom: none; }
+        .cat-dot { width: 10px; height: 10px; border-radius: 3px; margin-right: 8px; display: inline-block; }
+        .cat-stats { display: flex; gap: 12px; color: #86868b; font-size: 14px; }
         .cat-stats .profit { color: #16a34a; }
         .cat-stats .loss { color: #dc2626; }
         
-        /* 月度趋势 - 条形图 */
-        .month-row { position: relative; padding: 4px 0; display: flex; justify-content: space-between; align-items: center; font-size: 11px; }
-        .month-bar { position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(90deg, rgba(102,126,234,0.12) 0%, rgba(118,75,162,0.06) 100%); border-radius: 4px; z-index: 0; }
-        .month-name, .month-stats { z-index: 1; }
+        /* 月度 */
+        .month-row { position: relative; padding: 6px 0; display: flex; justify-content: space-between; font-size: 14px; }
+        .month-bar { position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(90deg, rgba(102,126,234,0.15) 0%, rgba(118,75,162,0.08) 100%); border-radius: 4px; }
         
-        /* 建议 - 紧凑 */
-        .suggestions { display: flex; flex-direction: column; gap: 4px; }
-        .suggestion { padding: 8px 10px; background: #f9fafb; border-radius: 8px; font-size: 12px; line-height: 1.4; }
+        /* 饼图 */
+        .pie-wrap { display: flex; align-items: center; gap: 12px; }
+        .pie-chart { width: 80px; height: 80px; border-radius: 50%; flex-shrink: 0; }
+        .pie-legend { display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
+        .pie-item { display: flex; align-items: center; gap: 6px; }
+        .pie-dot { width: 10px; height: 10px; border-radius: 3px; }
         
-        /* 饼图 - 小型 */
-        .pie-mini { display: flex; align-items: center; gap: 10px; }
-        .pie-mini-chart { width: 60px; height: 60px; border-radius: 50%; flex-shrink: 0; }
-        .pie-mini-legend { display: flex; flex-direction: column; gap: 2px; font-size: 11px; }
-        .pie-mini-item { display: flex; align-items: center; gap: 4px; }
-        .pie-mini-dot { width: 8px; height: 8px; border-radius: 2px; }
+        /* 建议 */
+        .suggest { padding: 10px 12px; background: #f9fafb; border-radius: 8px; font-size: 14px; margin-bottom: 6px; }
         
         .tabs { display: flex; background: white; border-radius: 10px; padding: 3px; margin-bottom: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
-        .tab { flex: 1; padding: 8px 6px; text-align: center; font-size: 12px; cursor: pointer; border-radius: 7px; transition: all 0.2s; }
+        .tab { flex: 1; padding: 10px 6px; text-align: center; font-size: 14px; cursor: pointer; border-radius: 8px; }
         .tab.active { background: #667eea; color: white; }
         .search-bar { display: flex; gap: 6px; margin-bottom: 10px; }
-        .search-bar input { flex: 1; padding: 8px 10px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 13px; outline: none; }
-        .search-bar input:focus { border-color: #667eea; }
-        .search-bar select { padding: 8px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 12px; background: white; }
-        .batch-bar { display: none; background: #fef3c7; padding: 8px 10px; border-radius: 8px; margin-bottom: 10px; align-items: center; justify-content: space-between; }
+        .search-bar input { flex: 1; padding: 12px; border: 1px solid #e0e0e0; border-radius: 10px; font-size: 16px; }
+        .search-bar select { padding: 12px; border: 1px solid #e0e0e0; border-radius: 10px; font-size: 14px; background: white; }
+        .batch-bar { display: none; background: #fef3c7; padding: 10px; border-radius: 10px; margin-bottom: 10px; align-items: center; justify-content: space-between; }
         .batch-bar.active { display: flex; }
-        .batch-btn { padding: 5px 10px; border-radius: 5px; font-size: 11px; border: none; cursor: pointer; margin-left: 6px; }
+        .batch-btn { padding: 6px 12px; border-radius: 6px; font-size: 13px; border: none; cursor: pointer; margin-left: 8px; }
         .batch-btn.sell { background: #667eea; color: white; }
         .batch-btn.idle { background: #fef3c7; color: #d97706; }
         .batch-btn.delete { background: #fee2e2; color: #dc2626; }
         .asset-list { display: flex; flex-direction: column; gap: 10px; }
-        .asset-card { background: white; border-radius: 14px; padding: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+        .asset-card { background: white; border-radius: 14px; padding: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
         .asset-card.selected { border: 2px solid #667eea; }
-        .asset-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px; }
-        .asset-name { font-size: 14px; font-weight: 600; }
-        .asset-status { font-size: 10px; padding: 2px 6px; border-radius: 3px; font-weight: 500; }
+        .asset-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px; }
+        .asset-name { font-size: 17px; font-weight: 600; }
+        .asset-status { font-size: 12px; padding: 3px 8px; border-radius: 4px; font-weight: 500; }
         .status-active { background: #dcfce7; color: #16a34a; }
         .status-idle { background: #fef3c7; color: #d97706; }
         .status-sold { background: #e0e7ff; color: #4f46e5; }
         .status-expired { background: #fee2e2; color: #dc2626; }
-        .asset-price { font-size: 20px; font-weight: 700; color: #667eea; }
-        .asset-meta { display: flex; gap: 12px; margin-top: 4px; font-size: 11px; color: #86868b; }
-        .asset-cost { margin-top: 8px; padding-top: 8px; border-top: 1px solid #f0f0f5; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; font-size: 11px; }
-        .cost-item .cost-label { color: #86868b; font-size: 9px; }
-        .cost-item .cost-value { font-weight: 600; margin-top: 1px; }
+        .asset-price { font-size: 24px; font-weight: 700; color: #667eea; }
+        .asset-meta { display: flex; gap: 14px; margin-top: 6px; font-size: 13px; color: #86868b; }
+        .asset-cost { margin-top: 10px; padding-top: 10px; border-top: 1px solid #f0f0f5; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; font-size: 13px; }
+        .cost-item .cost-label { color: #86868b; font-size: 11px; }
+        .cost-item .cost-value { font-weight: 600; margin-top: 2px; font-size: 14px; }
         .profit { color: #16a34a; }
         .loss { color: #dc2626; }
-        .asset-actions { display: flex; gap: 6px; margin-top: 8px; }
-        .btn { padding: 6px 10px; border-radius: 6px; font-size: 11px; border: none; cursor: pointer; }
+        .asset-actions { display: flex; gap: 8px; margin-top: 12px; }
+        .btn { padding: 8px 14px; border-radius: 8px; font-size: 14px; border: none; cursor: pointer; }
         .btn-sell { background: #667eea; color: white; }
         .btn-idle { background: #fef3c7; color: #d97706; }
         .btn-edit { background: #f0f0f5; color: #666; }
         .btn-delete { background: #fee2e2; color: #dc2626; }
-        .fab { position: fixed; bottom: 30px; right: 20px; width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-size: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); cursor: pointer; border: none; z-index: 100; }
-        .fab-menu { position: fixed; bottom: 90px; right: 20px; display: none; flex-direction: column; gap: 8px; z-index: 99; }
+        .fab { position: fixed; bottom: 24px; right: 16px; width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-size: 28px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); cursor: pointer; border: none; z-index: 100; }
+        .fab-menu { position: fixed; bottom: 90px; right: 16px; display: none; flex-direction: column; gap: 10px; z-index: 99; }
         .fab-menu.active { display: flex; }
-        .fab-item { padding: 8px 14px; background: white; border-radius: 16px; font-size: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); cursor: pointer; }
-        .sync-bar { position: fixed; top: 8px; right: 8px; display: flex; gap: 6px; z-index: 100; }
-        .sync-btn { padding: 6px 10px; background: white; border: none; border-radius: 6px; font-size: 11px; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
-        .sync-status { padding: 6px 10px; background: white; border-radius: 6px; font-size: 10px; color: #86868b; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+        .fab-item { padding: 12px 18px; background: white; border-radius: 20px; font-size: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); cursor: pointer; }
+        .sync-bar { position: fixed; top: 10px; right: 10px; display: flex; gap: 8px; z-index: 100; }
+        .sync-btn { padding: 8px 12px; background: white; border: none; border-radius: 8px; font-size: 13px; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+        .sync-status { padding: 8px 12px; background: white; border-radius: 8px; font-size: 12px; color: #86868b; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
         .modal.active { display: flex; }
         .modal-content { background: white; border-radius: 16px; padding: 20px; width: 100%; max-width: 400px; max-height: 90vh; overflow-y: auto; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-        .modal-header h2 { font-size: 16px; }
-        .modal-close { width: 28px; height: 28px; border-radius: 50%; background: #f0f0f5; border: none; font-size: 16px; cursor: pointer; }
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; font-size: 12px; color: #86868b; margin-bottom: 4px; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px; outline: none; }
-        .form-group input:focus { border-color: #667eea; }
+        .modal-header h2 { font-size: 18px; }
+        .modal-close { width: 32px; height: 32px; border-radius: 50%; background: #f0f0f5; border: none; font-size: 18px; cursor: pointer; }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 14px; color: #86868b; margin-bottom: 6px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 10px; font-size: 16px; }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .btn-submit { width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
-        .empty-state { text-align: center; padding: 40px 20px; color: #86868b; }
-        .checkbox { width: 18px; height: 18px; cursor: pointer; accent-color: #667eea; }
-        .tag { display: inline-block; background: #e0e7ff; color: #4f46e5; font-size: 9px; padding: 1px 5px; border-radius: 3px; margin-right: 3px; }
-        .expire-warning { background: #fef3c7; border-left: 2px solid #f59e0b; padding: 6px 8px; margin-top: 6px; font-size: 11px; border-radius: 0 6px 6px 0; }
+        .btn-submit { width: 100%; padding: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; }
+        .empty-state { text-align: center; padding: 40px 20px; color: #86868b; font-size: 16px; }
+        .checkbox { width: 22px; height: 22px; cursor: pointer; accent-color: #667eea; }
+        .tag { display: inline-block; background: #e0e7ff; color: #4f46e5; font-size: 11px; padding: 2px 6px; border-radius: 4px; margin-right: 4px; }
+        .expire-warning { background: #fef3c7; border-left: 3px solid #f59e0b; padding: 8px 10px; margin-top: 8px; font-size: 13px; border-radius: 0 8px 8px 0; }
         #scanner-container { width: 100%; margin-bottom: 12px; }
-        .camera-preview { width: 100%; border-radius: 10px; margin-bottom: 10px; }
-        .export-options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
-        .export-btn { padding: 10px; background: #f9fafb; border: 1px solid #e0e0e0; border-radius: 8px; text-align: center; cursor: pointer; font-size: 12px; }
+        .camera-preview { width: 100%; border-radius: 12px; margin-bottom: 12px; }
+        .export-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+        .export-btn { padding: 12px; background: #f9fafb; border: 1px solid #e0e0e0; border-radius: 10px; text-align: center; cursor: pointer; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -140,43 +144,49 @@
     
     <div class="content">
         <!-- 总体概览 -->
-        <div class="analysis-section">
+        <div class="section">
             <h3>📈 总体概览</h3>
-            <div class="analysis-grid">
-                <div class="analysis-item"><div class="ai-value" id="active-count">0</div><div class="ai-label">使用中</div></div>
-                <div class="analysis-item"><div class="ai-value" id="sold-count">0</div><div class="ai-label">已卖出</div></div>
-                <div class="analysis-item"><div class="ai-value" id="avg-daily">¥0</div><div class="ai-label">日均成本</div></div>
-                <div class="analysis-item"><div class="ai-value" id="expire-count">0</div><div class="ai-label">即将过期</div></div>
-                <div class="analysis-item"><div class="ai-value" id="high-value">0</div><div class="ai-label">高价值</div></div>
-                <div class="analysis-item" id="profit-item"><div class="ai-value" id="profit-value">¥0</div><div class="ai-label">卖出盈亏</div></div>
+            <div class="grid-3">
+                <div class="grid-item"><div class="val" id="active-count">0</div><div class="lbl">使用中</div></div>
+                <div class="grid-item"><div class="val" id="sold-count">0</div><div class="lbl">已卖出</div></div>
+                <div class="grid-item"><div class="val" id="avg-daily">¥0</div><div class="lbl">日均成本</div></div>
+                <div class="grid-item"><div class="val" id="expire-count">0</div><div class="lbl">即将过期</div></div>
+                <div class="grid-item"><div class="val" id="high-value">0</div><div class="lbl">高价值</div></div>
+                <div class="grid-item" id="profit-item"><div class="val" id="profit-value">¥0</div><div class="lbl">卖出盈亏</div></div>
             </div>
         </div>
         
+        <!-- 折旧分析 - 当前价值 -->
+        <div class="section" id="dep-section" style="display:none">
+            <h3>📉 资产当前价值（按5年折旧计算）</h3>
+            <div id="dep-list"></div>
+        </div>
+        
         <!-- 分类占比 -->
-        <div class="analysis-section" id="pie-section" style="display:none">
+        <div class="section" id="pie-section" style="display:none">
             <h3>🥧 分类占比</h3>
-            <div class="pie-mini" id="pie-mini"></div>
+            <div class="pie-wrap" id="pie-wrap"></div>
         </div>
         
         <!-- 分类统计 -->
-        <div class="analysis-section" id="category-section" style="display:none">
+        <div class="section" id="cat-section" style="display:none">
             <h3>📁 分类统计</h3>
-            <div id="category-list"></div>
+            <div id="cat-list"></div>
         </div>
         
         <!-- 月度趋势 -->
-        <div class="analysis-section" id="month-section" style="display:none">
+        <div class="section" id="month-section" style="display:none">
             <h3>📊 月度购买趋势</h3>
             <div id="month-list"></div>
         </div>
         
         <!-- 智能建议 -->
-        <div class="analysis-section" id="suggest-section" style="display:none">
+        <div class="section" id="suggest-section" style="display:none">
             <h3>💡 智能建议</h3>
-            <div class="suggestions" id="suggestions"></div>
+            <div id="suggest-list"></div>
         </div>
         
-        <!-- 搜索筛选 -->
+        <!-- 搜索 -->
         <div class="search-bar">
             <input type="text" id="search-input" placeholder="🔍 搜索..." oninput="handleSearch()">
             <select id="filter-category" onchange="handleSearch()">
@@ -193,7 +203,7 @@
             </select>
         </div>
         
-        <!-- 批量操作栏 -->
+        <!-- 批量操作 -->
         <div class="batch-bar" id="batch-bar">
             <span id="selected-count">已选 0</span>
             <div>
@@ -294,7 +304,7 @@
         <div class="modal-content">
             <div class="modal-header"><h2>📷 扫码</h2><button class="modal-close" onclick="closeScanModal()">×</button></div>
             <div id="scanner-container"></div>
-            <div id="scan-result" style="display:none;background:#f0f0f5;padding:10px;border-radius:8px;font-size:13px;margin-bottom:10px"></div>
+            <div id="scan-result" style="display:none;background:#f0f0f5;padding:12px;border-radius:10px;font-size:15px;margin-bottom:12px"></div>
             <button class="btn-submit" id="use-scan-btn" style="display:none" onclick="useScanResult()">使用此条码</button>
         </div>
     </div>
@@ -306,7 +316,7 @@
             <video id="camera-preview" class="camera-preview" autoplay playsinline style="display:none"></video>
             <canvas id="photo-canvas" style="display:none"></canvas>
             <img id="captured-photo" class="camera-preview" style="display:none">
-            <div style="display:flex;gap:8px;margin-bottom:10px">
+            <div style="display:flex;gap:10px;margin-bottom:12px">
                 <button class="btn btn-sell" id="capture-btn" onclick="capturePhoto()" style="flex:1">📸 拍照</button>
                 <button class="btn btn-edit" id="retake-btn" style="display:none;flex:1" onclick="retakePhoto()">重拍</button>
             </div>
@@ -333,7 +343,6 @@
     </div>
 
     <script>
-        // ========== 配置 ==========
         const GIST_ID_KEY = 'asset_tracker_gist_id', TOKEN_KEY = 'asset_tracker_token', LOCAL_KEY = 'asset_tracker_data';
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('token')) localStorage.setItem(TOKEN_KEY, urlParams.get('token'));
@@ -348,7 +357,6 @@
         function updateSyncStatus(s) { document.getElementById('sync-status').textContent = s === 'syncing' ? '🔄 同步中' : s === 'synced' ? '☁️ 已同步' : s === 'error' ? '⚠️ 失败' : s === 'offline' ? '📱 本地' : '🔄 加载中'; }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
         
-        // ========== 数据同步 ==========
         async function loadData() {
             updateSyncStatus('loading');
             try {
@@ -365,11 +373,10 @@
             try { await fetch(`https://api.github.com/gists/${gistId}`, { method: 'PATCH', headers: { 'Authorization': `token ${githubToken}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ files: { 'assets.json': { content: JSON.stringify(allAssets, null, 2) } } }) }); updateSyncStatus('synced'); } catch(e) { updateSyncStatus('error'); }
         }
         
-        // ========== 分析渲染 ==========
         function renderAnalysis() {
             const today = new Date();
             let totalValue = 0, idleCount = 0, totalProfit = 0, expireCount = 0, highValueCount = 0, totalDailyCost = 0, activeCount = 0, soldCount = 0;
-            const categoryStats = {}, monthlyStats = {};
+            const categoryStats = {}, monthlyStats = {}, depreciationList = [];
             
             allAssets.forEach(a => {
                 const cat = a.category || '其他';
@@ -392,6 +399,23 @@
                     if (buyDate) {
                         const days = Math.max(1, Math.floor((today - new Date(buyDate)) / 86400000));
                         totalDailyCost += (a.price || 0) / days;
+                        
+                        // 折旧计算 - 只显示有意义的（购买超过30天且价值>100）
+                        if (days > 30 && a.price > 100) {
+                            const original = a.price || 0;
+                            const depreciationRate = Math.min(1, days / (5 * 365)); // 5年折旧
+                            const currentValue = Math.round(original * (1 - depreciationRate));
+                            const lossAmount = original - currentValue;
+                            if (lossAmount > 10) { // 只显示折旧超过10元的
+                                depreciationList.push({ 
+                                    name: a.name, 
+                                    original, 
+                                    current: currentValue, 
+                                    loss: lossAmount,
+                                    percent: Math.round(depreciationRate * 100)
+                                });
+                            }
+                        }
                     }
                     
                     if (a.expire_date) { const d = Math.floor((new Date(a.expire_date) - today) / 86400000); if (d <= 30 && d >= 0) expireCount++; }
@@ -420,40 +444,56 @@
             document.getElementById('total-profit').textContent = totalProfit >= 0 ? `+¥${totalProfit.toLocaleString()}` : `-¥${Math.abs(totalProfit).toLocaleString()}`;
             if (totalProfit < 0) profitCard.classList.add('loss'); else profitCard.classList.remove('loss');
             
+            // 折旧 - 当前价值（按损失金额排序，损失最大的在前）
+            if (depreciationList.length > 0) {
+                document.getElementById('dep-section').style.display = 'block';
+                depreciationList.sort((a, b) => b.loss - a.loss);
+                document.getElementById('dep-list').innerHTML = depreciationList.slice(0, 6).map(d => `
+                    <div class="dep-item">
+                        <div class="dep-name">${d.name}</div>
+                        <div class="dep-values">
+                            <span class="dep-original">¥${d.original.toLocaleString()}</span>
+                            <span class="dep-current">¥${d.current.toLocaleString()}</span>
+                            <span class="dep-down">-¥${d.loss.toLocaleString()}</span>
+                        </div>
+                    </div>
+                `).join('');
+            } else { document.getElementById('dep-section').style.display = 'none'; }
+            
             // 饼图
             const sortedCats = Object.entries(categoryStats).sort((a, b) => b[1].value - a[1].value);
             const pieData = sortedCats.filter(([_, s]) => s.value > 0);
             if (pieData.length > 0) {
                 document.getElementById('pie-section').style.display = 'block';
                 const gradient = pieData.map(([cat, s]) => `${s.color} ${Math.round((s.value / totalValue) * 100)}%`).join(', ');
-                document.getElementById('pie-mini').innerHTML = `<div class="pie-mini-chart" style="background:conic-gradient(${gradient})"></div><div class="pie-mini-legend">${pieData.slice(0, 4).map(([cat, s]) => `<div class="pie-mini-item"><div class="pie-mini-dot" style="background:${s.color}"></div>${cat} ¥${s.value.toLocaleString()}</div>`).join('')}</div>`;
+                document.getElementById('pie-wrap').innerHTML = `<div class="pie-chart" style="background:conic-gradient(${gradient})"></div><div class="pie-legend">${pieData.slice(0, 4).map(([cat, s]) => `<div class="pie-item"><div class="pie-dot" style="background:${s.color}"></div>${cat} ¥${s.value.toLocaleString()}</div>`).join('')}</div>`;
             } else { document.getElementById('pie-section').style.display = 'none'; }
             
             // 分类统计
             if (sortedCats.length > 0) {
-                document.getElementById('category-section').style.display = 'block';
-                document.getElementById('category-list').innerHTML = sortedCats.map(([cat, s]) => `
-                    <div class="category-row">
+                document.getElementById('cat-section').style.display = 'block';
+                document.getElementById('cat-list').innerHTML = sortedCats.map(([cat, s]) => `
+                    <div class="cat-row">
                         <div><span class="cat-dot" style="background:${s.color}"></span>${cat}</div>
                         <div class="cat-stats">
                             <span>${s.count}件</span>
                             <span>¥${s.value.toLocaleString()}</span>
-                            ${s.countSold > 0 ? `<span class="${s.profit >= 0 ? 'profit' : 'loss'}">卖${s.countSold}件 ${s.profit >= 0 ? '+' : ''}¥${s.profit.toLocaleString()}</span>` : ''}
+                            ${s.countSold > 0 ? `<span class="${s.profit >= 0 ? 'profit' : 'loss'}">卖${s.countSold} ${s.profit >= 0 ? '+' : ''}¥${s.profit.toLocaleString()}</span>` : ''}
                         </div>
                     </div>
                 `).join('');
-            } else { document.getElementById('category-section').style.display = 'none'; }
+            } else { document.getElementById('cat-section').style.display = 'none'; }
             
             // 月度趋势
-            const sortedMonths = Object.entries(monthlyStats).sort((a, b) => b[0].localeCompare(a[0])).slice(0, 6);
+            const sortedMonths = Object.entries(monthlyStats).sort((a, b) => b[0].localeCompare(a[0])).slice(0, 5);
             if (sortedMonths.length > 0) {
                 document.getElementById('month-section').style.display = 'block';
                 const maxVal = Math.max(...sortedMonths.map(m => m[1].value), 1);
                 document.getElementById('month-list').innerHTML = sortedMonths.map(([m, s]) => `
                     <div class="month-row">
                         <div class="month-bar" style="width:${(s.value / maxVal) * 100}%"></div>
-                        <div class="month-name">${m}</div>
-                        <div class="month-stats">¥${s.value.toLocaleString()} (${s.count}件)</div>
+                        <div style="position:relative">${m}</div>
+                        <div style="position:relative">¥${s.value.toLocaleString()} (${s.count}件)</div>
                     </div>
                 `).join('');
             } else { document.getElementById('month-section').style.display = 'none'; }
@@ -464,16 +504,16 @@
             if (totalProfit < 0) suggestions.push(`📉 卖出亏损 ¥${Math.abs(totalProfit).toLocaleString()}，建议定价时参考市场行情`);
             if (expireCount > 0) suggestions.push(`⏰ ${expireCount} 件物品即将过期，请尽快处理`);
             if (highValueCount > 0) suggestions.push(`💰 ${highValueCount} 件高价值物品，建议做好保管和保险`);
+            if (depreciationList.length > 0) suggestions.push(`📉 ${depreciationList.length} 件物品有明显折旧，出售时注意定价`);
             if (suggestions.length === 0) suggestions.push('✅ 资产管理良好，继续保持！');
             
             if (suggestions.length > 0) {
                 document.getElementById('suggest-section').style.display = 'block';
-                document.getElementById('suggestions').innerHTML = suggestions.map(s => `<div class="suggestion">${s}</div>`).join('');
+                document.getElementById('suggest-list').innerHTML = suggestions.map(s => `<div class="suggest">${s}</div>`).join('');
             } else { document.getElementById('suggest-section').style.display = 'none'; }
         }
         
         function renderAll() { renderAnalysis(); renderAssets(); }
-        
         function handleSearch() { searchKeyword = document.getElementById('search-input').value.toLowerCase(); searchCategory = document.getElementById('filter-category').value; renderAssets(); }
         
         function getFilteredAssets() {
@@ -524,7 +564,7 @@
                 
                 return `<div class="asset-card ${isSelected ? 'selected' : ''}">
                     <div class="asset-header">
-                        <div style="display:flex;align-items:center;gap:8px;">
+                        <div style="display:flex;align-items:center;gap:10px;">
                             <input type="checkbox" class="checkbox" ${isSelected ? 'checked' : ''} onclick="toggleSelect('${a.id}')">
                             <div><div class="asset-name">${a.name}</div><div class="asset-meta"><span>${buyDate}</span><span>${days}天</span>${tags}</div></div>
                         </div>
